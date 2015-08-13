@@ -1,0 +1,153 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://raw.githubusercontent.com/swagger-api/swagger-spec/master/examples/v2.0/json/petstore.json
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Security-Policy:
+      - default-src 'none'
+      X-Xss-Protection:
+      - 1; mode=block
+      X-Frame-Options:
+      - deny
+      X-Content-Type-Options:
+      - nosniff
+      Strict-Transport-Security:
+      - max-age=31536000
+      Etag:
+      - '"bb1fcb3b94e6c36f446ea346074acb442410b5c6"'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cache-Control:
+      - max-age=300
+      Content-Length:
+      - '559'
+      Accept-Ranges:
+      - bytes
+      Date:
+      - Tue, 29 Sep 2015 17:29:49 GMT
+      Via:
+      - 1.1 varnish
+      Connection:
+      - keep-alive
+      X-Served-By:
+      - cache-dfw1825-DFW
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      Vary:
+      - Authorization,Accept-Encoding
+      Access-Control-Allow-Origin:
+      - "*"
+      Expires:
+      - Tue, 29 Sep 2015 17:34:49 GMT
+      Source-Age:
+      - '0'
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "swagger": "2.0",
+          "info": {
+            "version": "1.0.0",
+            "title": "Swagger Petstore",
+            "contact": {
+              "name": "Swagger API Team",
+              "url": "http://swagger.io"
+            },
+            "license": {
+              "name": "Creative Commons 4.0 International",
+              "url": "http://creativecommons.org/licenses/by/4.0/"
+            }
+          },
+          "host": "petstore.swagger.io",
+          "basePath": "/api",
+          "schemes": [
+            "http"
+          ],
+          "paths": {
+            "/pets": {
+              "get": {
+                "tags": [ "Pet Operations" ],
+                "summary": "finds pets in the system",
+                "responses": {
+                  "200": {
+                    "description": "pet response",
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/Pet"
+                      }
+                    },
+                    "headers": {
+                      "x-expires": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "description": "unexpected error",
+                    "schema": {
+                      "$ref": "#/definitions/Error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "definitions": {
+            "Pet": {
+              "type": "object",
+              "required": [
+                "id",
+                "name"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "tag": {
+                  "type": "string"
+                }
+              }
+            },
+            "Error": {
+              "type": "object",
+              "required": [
+                "code",
+                "message"
+              ],
+              "properties": {
+                "code": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+    http_version: 
+  recorded_at: Tue, 29 Sep 2015 17:29:49 GMT
+recorded_with: VCR 2.9.3

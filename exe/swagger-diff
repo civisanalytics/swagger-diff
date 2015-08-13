@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+require 'swagger/diff'
+
+if ARGV.length == 2
+  diff = Swagger::Diff::Diff.new(ARGV[0], ARGV[1])
+
+  unless diff.compatible?
+    puts diff.incompatibilities_message
+    exit 1
+  end
+else
+  puts 'Usage: swagger-diff <old> <new>
+
+Checks <new> for backwards-compatibility with <old>. If <new> is incompatible,
+a list of incompatibilities will be printed.'
+end
