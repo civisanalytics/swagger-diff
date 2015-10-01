@@ -23,6 +23,7 @@ and helper functions that can be used directly.'
   spec.require_paths = ['lib']
 
   spec.add_dependency 'swagger-core', '~> 0.2.3'
+  spec.add_dependency 'rspec-expectations', '~> 3.3'
   spec.add_development_dependency 'bundler', '~> 1.9'
   spec.add_development_dependency 'rake', '~> 10.4'
   spec.add_development_dependency 'rspec', '~> 3.3'
