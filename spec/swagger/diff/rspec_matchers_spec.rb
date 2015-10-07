@@ -27,6 +27,8 @@ expected Swagger to be compatible with 'spec/fixtures/dummy.v1.json', found:
     - missing request param: str (type: string)
   - post /a/
     - new required request param: extra
+  - post /c/
+    - new required request param: existing/b
   - put /b/{}
     - new required request param: extra
 - incompatible response attributes

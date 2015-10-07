@@ -150,6 +150,18 @@
             }
           }
         }
+      },
+      "post": {
+        "parameters": [
+          {
+            "name": "",
+            "in": "body",
+            "schema": { "$ref": "#/definitions/C2" }
+          }
+        ],
+        "responses": {
+          "204": {}
+        }
       }
     }
   },
@@ -249,6 +261,28 @@
       "properties": {
         "id": { "type": "integer" },
         "name": { "type": "string" }
+      }
+    },
+    "C2": {
+      "type": "object",
+      "properties": {
+        "existing": { "$ref": "#/definitions/C3" }
+      }
+    },
+    "C3": {
+      "type": "object",
+      "required": [ "a" ],
+      "properties": {
+        "a": { "type": "string" },
+        "b": { "type": "string" }
+      }
+    },
+    "C4": {
+      "type": "object",
+      "required": [ "a", "b" ],
+      "properties": {
+        "a": { "type": "string" },
+        "b": { "type": "string" }
       }
     }
   }

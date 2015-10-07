@@ -80,12 +80,20 @@ module Swagger
         ret
       end
 
+      def new_child?(req, old)
+        idx = req.rindex('/')
+        return false unless idx
+        key = req[0..idx]
+        !old.any? { |param| param.start_with?(key) }
+      end
+
       def incompatible_request_params_enumerator
         Enumerator.new do |yielder|
           @old_specification.request_params.each do |key, old_params|
             new_params = @new_specification.request_params[key]
             next if new_params.nil?
             (new_params[:required] - old_params[:required]).each do |req|
+              next if new_child?(req, old_params[:all])
               yielder << [key, "new required request param: #{req}"]
             end
             (old_params[:all] - new_params[:all]).each do |req|
