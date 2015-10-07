@@ -28,7 +28,7 @@ and helper functions that can be used directly.'
   spec.add_development_dependency 'rake', '~> 10.4'
   spec.add_development_dependency 'rspec', '~> 3.3'
   spec.add_development_dependency 'pry', '~> 0.10.1'
-  spec.add_development_dependency 'rubocop', '~> 0.33.0'
+  spec.add_development_dependency 'rubocop', '~> 0.34.0'
   spec.add_development_dependency 'vcr', '~> 2.9'
   spec.add_development_dependency 'webmock', '~> 1.21'
 end

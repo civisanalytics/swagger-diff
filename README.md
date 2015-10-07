@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/civisanalytics/swagger-diff.svg?branch=master)](https://travis-ci.org/civisanalytics/swagger-diff)
 [![Gem Version](https://badge.fury.io/rb/swagger-diff.svg)](http://badge.fury.io/rb/swagger-diff)
+[![Dependency Status](https://gemnasium.com/civisanalytics/swagger-diff.svg)](https://gemnasium.com/civisanalytics/swagger-diff)
 
 ![Swagger::Diff in action](swagger-diff.gif)
 
