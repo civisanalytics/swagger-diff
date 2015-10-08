@@ -1,6 +1,6 @@
 # Change Log
 
-## master (unreleased)
+## 1.0.2 (2015-10-08)
 
 ### Bugs Fixed
 
