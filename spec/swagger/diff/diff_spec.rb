@@ -29,7 +29,8 @@ describe Swagger::Diff::Diff do
                                  'missing request param: obj/thing (type: integer)',
                                  'missing request param: str (type: string)'
                                 ],
-               'put /b/{}' => ['new required request param: extra'] },
+               'put /b/{}' => ['new required request param: extra'],
+               'post /c/' => ['new required request param: existing/b'] },
              response_attributes: {
                'post /a/' => ['missing attribute from 200 response: description (type: string)'],
                'get /a/{}' => ['missing attribute from 200 response: description (type: string)'],
@@ -54,6 +55,8 @@ describe Swagger::Diff::Diff do
     - missing request param: str (type: string)
   - post /a/
     - new required request param: extra
+  - post /c/
+    - new required request param: existing/b
   - put /b/{}
     - new required request param: extra
 - incompatible response attributes
