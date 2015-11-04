@@ -2,6 +2,11 @@
 
 ## 1.0.3 (TBD)
 
+### Changes
+
+* Added a default Rake task to run Rubocop and RSpec
+* Added [CONTRIBUTING.md](CONTRIBUTING.md)
+
 ### Bugs Fixed
 
 * [#8](https://github.com/civisanalytics/swagger-diff/pull/8)
