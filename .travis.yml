@@ -1,5 +1,2 @@
 language: ruby
 cache: bundler
-script:
-  - bundle exec rubocop
-  - bundle exec rspec
