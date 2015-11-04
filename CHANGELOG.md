@@ -11,6 +11,8 @@
 
 * [#8](https://github.com/civisanalytics/swagger-diff/pull/8)
   fixed parsing of header and formData parameters
+* [#10](https://github.com/civisanalytics/swagger-diff/pull/10)
+  detect if a parameter's location (*i.e.*, `in` value) changes
 
 ## 1.0.2 (2015-10-08)
 
