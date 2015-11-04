@@ -20,11 +20,11 @@ expected Swagger to be compatible with 'spec/fixtures/dummy.v1.json', found:
   - put /a/{}
 - incompatible request params
   - get /a/
-    - missing request param: limit (type: integer)
+    - missing request param: limit (in: query, type: integer)
   - patch /a/{}
-    - missing request param: name (type: ["string", "null"])
-    - missing request param: obj/thing (type: integer)
-    - missing request param: str (type: string)
+    - missing request param: name (in: body, type: ["string", "null"])
+    - missing request param: obj/thing (in: body, type: integer)
+    - missing request param: str (in: body, type: string)
   - post /a/
     - new required request param: extra
   - post /c/
@@ -33,17 +33,17 @@ expected Swagger to be compatible with 'spec/fixtures/dummy.v1.json', found:
     - new required request param: extra
 - incompatible response attributes
   - get /a/{}
-    - missing attribute from 200 response: description (type: string)
+    - missing attribute from 200 response: description (in: body, type: string)
   - get /c/
-    - missing attribute from 200 response: []/name (type: string)
+    - missing attribute from 200 response: []/name (in: body, type: string)
     - missing 201 response
   - patch /a/{}
-    - missing attribute from 200 response: obj/thing (type: integer)
-    - missing attribute from 200 response: objs[]/thing (type: integer)
+    - missing attribute from 200 response: obj/thing (in: body, type: integer)
+    - missing attribute from 200 response: objs[]/thing (in: body, type: integer)
   - post /a/
-    - missing attribute from 200 response: description (type: string)
+    - missing attribute from 200 response: description (in: body, type: string)
   - put /b/{}
-    - missing attribute from 200 response: description (type: string)
+    - missing attribute from 200 response: description (in: body, type: string)
       EOM
       expect do
         expect('spec/fixtures/dummy.v2.json')
