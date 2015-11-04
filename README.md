@@ -27,6 +27,8 @@ Specifications are considered backwards compatible if:
 - all response attributes in the old specification have the same type in the new
   one
 
+Read more on the [Civis Analytics blog](https://civisanalytics.com/blog/engineering/2015/10/02/using-swagger-to-detect-breaking-api-changes/).
+
 ## Installation
 
 Add this line to your application's Gemfile:
