@@ -176,4 +176,35 @@ describe Swagger::Diff::Specification do
                                                   'key2 (type: string)']) })
     end
   end
+
+  describe 'formData' do
+    let(:parsed) do
+      { 'swagger' => '2.0',
+        'info' => { 'title' => 'Swagger Fixture', 'version' => '1.0' },
+        'paths' =>
+       { '/a/' =>
+        { 'post' =>
+         { 'parameters' =>
+          [{ 'name' => 'w',
+             'in' => 'formData',
+             'required' => false,
+             'type' => 'string' },
+           { 'name' => 'x',
+             'in' => 'formData',
+             'required' => true,
+             'type' => 'string' }],
+           'responses' =>
+          { '204' => {} } } } } }
+    end
+    let(:spec) do
+      Swagger::Diff::Specification.new(parsed)
+    end
+
+    it 'parses params' do
+      expect(spec.request_params)
+        .to eq('post /a/' => { required: Set.new(['x']),
+                               all: Set.new(['w (type: string)',
+                                             'x (type: string)']) })
+    end
+  end
 end
