@@ -1,6 +1,6 @@
 # Contributing to Swagger::Diff
 
-We welcome Pull Requests from everyone!
+We welcome pull requests from everyone!
 
 ## Getting Started
 
@@ -12,12 +12,12 @@ We welcome Pull Requests from everyone!
 6. Make sure the test suite, including your new tests, passes (`rake`)
 7. Commit your changes (`git commit -am 'Add some feature'`)
 8. Push to the branch (`git push origin my-new-feature`)
-9. Create a new Pull Request
+9. Create a new pull request
 10. If the Travis build fails, address any issues
 
 ## Tips
 
-- All Pull Requests must include test coverage. If you’re not sure how to test
+- All pull requests must include test coverage. If you’re not sure how to test
   your changes, feel free to ask for help.
 - Contributions must conform to the
   [Ruby Style Guide](https://github.com/bbatsov/ruby-style-guide).
