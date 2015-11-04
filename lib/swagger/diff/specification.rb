@@ -161,11 +161,11 @@ module Swagger
         ret = { required: Set.new, all: Set.new }
         return ret if params.nil?
         params.each do |param|
-          if param.in == 'path' || param.in == 'query'
+          if param.in == 'body'
+            merge_refs!(ret, refs(param.schema['$ref']))
+          else
             ret[:required].add(param.name) if param.required
             ret[:all].add("#{param.name} (type: #{param.type})")
-          else
-            merge_refs!(ret, refs(param.schema['$ref']))
           end
         end
         ret

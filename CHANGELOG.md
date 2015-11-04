@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.0.3 (TBD)
+
+### Bugs Fixed
+
+* [#8](https://github.com/civisanalytics/swagger-diff/pull/8)
+  fixed parsing of header and formData parameters
+
 ## 1.0.2 (2015-10-08)
 
 ### Bugs Fixed
