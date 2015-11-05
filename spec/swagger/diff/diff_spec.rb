@@ -23,21 +23,21 @@ describe Swagger::Diff::Diff do
     expect(incompat_diff.incompatibilities)
       .to eq(endpoints: ['post /b/', 'put /a/{}'],
              request_params: {
-               'get /a/' => ['missing request param: limit (type: integer)'],
+               'get /a/' => ['missing request param: limit (in: query, type: integer)'],
                'post /a/' => ['new required request param: extra'],
-               'patch /a/{}' => ['missing request param: name (type: ["string", "null"])',
-                                 'missing request param: obj/thing (type: integer)',
-                                 'missing request param: str (type: string)'
+               'patch /a/{}' => ['missing request param: name (in: body, type: ["string", "null"])',
+                                 'missing request param: obj/thing (in: body, type: integer)',
+                                 'missing request param: str (in: body, type: string)'
                                 ],
                'put /b/{}' => ['new required request param: extra'],
                'post /c/' => ['new required request param: existing/b'] },
              response_attributes: {
-               'post /a/' => ['missing attribute from 200 response: description (type: string)'],
-               'get /a/{}' => ['missing attribute from 200 response: description (type: string)'],
-               'patch /a/{}' => ['missing attribute from 200 response: obj/thing (type: integer)',
-                                 'missing attribute from 200 response: objs[]/thing (type: integer)'],
-               'put /b/{}' => ['missing attribute from 200 response: description (type: string)'],
-               'get /c/' => ['missing attribute from 200 response: []/name (type: string)',
+               'post /a/' => ['missing attribute from 200 response: description (in: body, type: string)'],
+               'get /a/{}' => ['missing attribute from 200 response: description (in: body, type: string)'],
+               'patch /a/{}' => ['missing attribute from 200 response: obj/thing (in: body, type: integer)',
+                                 'missing attribute from 200 response: objs[]/thing (in: body, type: integer)'],
+               'put /b/{}' => ['missing attribute from 200 response: description (in: body, type: string)'],
+               'get /c/' => ['missing attribute from 200 response: []/name (in: body, type: string)',
                              'missing 201 response'] })
   end
 
@@ -48,11 +48,11 @@ describe Swagger::Diff::Diff do
   - put /a/{}
 - incompatible request params
   - get /a/
-    - missing request param: limit (type: integer)
+    - missing request param: limit (in: query, type: integer)
   - patch /a/{}
-    - missing request param: name (type: ["string", "null"])
-    - missing request param: obj/thing (type: integer)
-    - missing request param: str (type: string)
+    - missing request param: name (in: body, type: ["string", "null"])
+    - missing request param: obj/thing (in: body, type: integer)
+    - missing request param: str (in: body, type: string)
   - post /a/
     - new required request param: extra
   - post /c/
@@ -61,17 +61,17 @@ describe Swagger::Diff::Diff do
     - new required request param: extra
 - incompatible response attributes
   - get /a/{}
-    - missing attribute from 200 response: description (type: string)
+    - missing attribute from 200 response: description (in: body, type: string)
   - get /c/
-    - missing attribute from 200 response: []/name (type: string)
+    - missing attribute from 200 response: []/name (in: body, type: string)
     - missing 201 response
   - patch /a/{}
-    - missing attribute from 200 response: obj/thing (type: integer)
-    - missing attribute from 200 response: objs[]/thing (type: integer)
+    - missing attribute from 200 response: obj/thing (in: body, type: integer)
+    - missing attribute from 200 response: objs[]/thing (in: body, type: integer)
   - post /a/
-    - missing attribute from 200 response: description (type: string)
+    - missing attribute from 200 response: description (in: body, type: string)
   - put /b/{}
-    - missing attribute from 200 response: description (type: string)
+    - missing attribute from 200 response: description (in: body, type: string)
 '
     end
 
