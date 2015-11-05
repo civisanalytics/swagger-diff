@@ -165,7 +165,7 @@ module Swagger
             ret[:required].add(param.name) if param.required
             ret[:all].add("#{param.name} (type: #{param.type})")
           else
-            merge_refs!(ret, refs(param.schema['$ref'])) unless (param.schema.nil?)
+            merge_refs!(ret, refs(param.schema['$ref']))
           end
         end
         ret
