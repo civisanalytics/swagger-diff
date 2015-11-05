@@ -111,7 +111,7 @@ module Swagger
         if prefix == "#{name}/" || prefix =~ %r{/#{name}(\[\])?/}
           # Anonymizing the reference in case the name changed (e.g.,
           # generated Swagger).
-          { all: ["#{key} (type: reference)"] }
+          { all: ["#{key} (in: body, type: reference)"] }
         else
           refs(ref, "#{key}/")
         end
@@ -124,7 +124,7 @@ module Swagger
           merge_refs!(ret, nested(schema['$ref'], prefix, name, list))
         else
           ret[:required].add(key) if required && required.include?(name)
-          ret[:all].add("#{key} (type: #{schema.type}#{'[]' if list})")
+          ret[:all].add("#{key} (in: body, type: #{schema.type}#{'[]' if list})")
         end
         ret
       end
@@ -148,7 +148,7 @@ module Swagger
                      else
                        '*'
                      end
-              ret[:all].add("#{prefix}#{name} (type: Hash[string, #{type}])")
+              ret[:all].add("#{prefix}#{name} (in: body, type: Hash[string, #{type}])")
             end
           else
             merge_refs!(ret, properties_for_ref(prefix, name, schema, required))
@@ -161,11 +161,11 @@ module Swagger
         ret = { required: Set.new, all: Set.new }
         return ret if params.nil?
         params.each do |param|
-          if param.in == 'path' || param.in == 'query'
-            ret[:required].add(param.name) if param.required
-            ret[:all].add("#{param.name} (type: #{param.type})")
-          else
+          if param.in == 'body'
             merge_refs!(ret, refs(param.schema['$ref']))
+          else
+            ret[:required].add(param.name) if param.required
+            ret[:all].add("#{param.name} (in: #{param.in}, type: #{param.type})")
           end
         end
         ret
