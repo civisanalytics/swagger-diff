@@ -208,4 +208,26 @@ describe Swagger::Diff::Specification do
                                              'x (in: formData, type: string)']) })
     end
   end
+
+  describe 'definitions' do
+    let(:parsed) do
+      { 'swagger' => '2.0',
+        'info' => { 'title' => 'Swagger Fixture', 'version' => '1.0' },
+        'paths' =>
+        { '/a/' =>
+          { 'get' =>
+            { 'responses' =>
+              { '200' =>
+                { 'schema' => { '$ref' => '#/definitions/no_props' } } } } } },
+        'definitions' =>
+        { 'no_props' => { 'type' => 'object' } } }
+    end
+    let(:spec) do
+      Swagger::Diff::Specification.new(parsed)
+    end
+
+    it 'can be parsed without properties' do
+      expect { spec.response_attributes }.not_to raise_error
+    end
+  end
 end
