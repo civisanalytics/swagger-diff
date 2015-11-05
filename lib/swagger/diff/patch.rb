@@ -13,3 +13,17 @@ OAUTH2_PARAMS = [:flow, :authorizationUrl, :scopes]
 Swagger::V2::SecurityScheme.required_properties.reject! do |k, _|
   OAUTH2_PARAMS.include?(k)
 end
+
+# Workaround for Swagger::V2::Operation[1] not including deprecated. Patching
+# pending a merge/release of #11[2].
+#
+# [1] https://github.com/swagger-rb/swagger-rb/blob/master/lib/swagger/v2/operation.rb
+# [2] https://github.com/swagger-rb/swagger-rb/pull/12/files
+
+module Swagger
+  module V2
+    class Operation
+      field :deprecated, String
+    end
+  end
+end
