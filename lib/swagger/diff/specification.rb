@@ -84,22 +84,40 @@ module Swagger
       # parameter definitions (i.e., all parameters, including nested
       # parameters, are included in a single set).
       def refs(ref, prefix = '')
-        definitions = @parsed.definitions
         idx = ref.rindex('/')
         key = ref[idx + 1..-1]
-        ret = {}
-        if definitions[key].allOf
-          definitions[key].allOf.each do |schema|
-            if schema['$ref']
-              merge_refs!(ret, refs(schema['$ref'], prefix))
-            else
-              merge_refs!(ret, properties(schema.properties, schema.required, prefix))
-            end
+        schema(@parsed.definitions[key], prefix)
+      end
+
+      def all_of!(definitions, prefix, ret)
+        definitions.each do |s|
+          if s['$ref']
+            merge_refs!(ret, refs(s['$ref'], prefix))
+          else
+            merge_refs!(ret, schema(s, prefix))
           end
-        elsif definitions[key].key?('properties')
+        end
+        ret
+      end
+
+      def array?(definition)
+        definition.type && definition.type == 'array' && definition.items
+      end
+
+      def schema(definition, prefix = '')
+        ret = { required: Set.new, all: Set.new }
+        if definition.allOf
+          all_of!(definition.allOf, prefix, ret)
+        elsif definition['$ref']
+          merge_refs!(ret, refs(definition['$ref'], prefix))
+        elsif definition.properties
           merge_refs!(ret,
-                      properties(definitions[key].properties,
-                                 definitions[key].required, prefix))
+                      properties(definition.properties,
+                                 definition.required, prefix))
+        elsif array?(definition)
+          merge_refs!(ret, schema(definition.items, "#{prefix}[]/"))
+        elsif definition.type == 'object'
+          ret[:all].add(hash_property(definition, prefix))
         end
         ret
       end
@@ -129,6 +147,28 @@ module Swagger
         ret
       end
 
+      def hash_property(definition, prefix, name = '')
+        # Swagger 2.0 doesn't appear to support non-string keys[1]. If
+        # this changes, this will need to be updated.
+        # [1] https://github.com/swagger-api/swagger-spec/issues/299
+        # TODO: this doesn't handle hashes of objects.
+        key = if name == ''
+                # Remove the trailing slash, if present and no name was
+                # specified (a prefix will always either be blank or end in a
+                # trailing slash).
+                prefix[0..-2]
+              else
+                "#{prefix}#{name}"
+              end
+        type = if definition.additionalProperties &&
+                  definition.additionalProperties.type
+                 definition.additionalProperties.type
+               else
+                 '*'
+               end
+        "#{key} (in: body, type: Hash[string, #{type}])"
+      end
+
       def properties(properties, required, prefix = '')
         ret = { required: Set.new, all: Set.new }
         properties.each do |name, schema|
@@ -138,17 +178,7 @@ module Swagger
             if schema.allOf
               # TODO: handle nested allOfs.
             else
-              # Swagger 2.0 doesn't appear to support non-string keys[1]. If
-              # this changes, this will need to be updated.
-              # [1] https://github.com/swagger-api/swagger-spec/issues/299
-              # TODO: this doesn't handle hashes of objects.
-              type = if schema.additionalProperties &&
-                        schema.additionalProperties.type
-                       schema.additionalProperties.type
-                     else
-                       '*'
-                     end
-              ret[:all].add("#{prefix}#{name} (in: body, type: Hash[string, #{type}])")
+              ret[:all].add(hash_property(schema, prefix, name))
             end
           else
             merge_refs!(ret, properties_for_ref(prefix, name, schema, required))
@@ -175,14 +205,7 @@ module Swagger
         ret = {}
         endpoint.responses.each do |code, response|
           if response.schema
-            if response.schema.include?('type') && response.schema.type == 'array'
-              ref = response.schema.items['$ref']
-              prefix = '[]/'
-            else
-              ref = response.schema['$ref']
-              prefix = ''
-            end
-            ret[code] = refs(ref, prefix)[:all]
+            ret[code] = schema(response.schema)[:all]
           else
             ret[code] = Set.new
           end
