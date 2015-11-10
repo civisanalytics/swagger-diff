@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.0.4 (TBD)
+
+### Bugs Fixed
+
+* [#14](https://github.com/civisanalytics/swagger-diff/pull/14)
+  allow schema definitions without properties
+
 ## 1.0.3 (2015-11-04)
 
 ### Changes

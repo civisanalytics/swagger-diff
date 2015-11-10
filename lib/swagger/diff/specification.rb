@@ -96,7 +96,7 @@ module Swagger
               merge_refs!(ret, properties(schema.properties, schema.required, prefix))
             end
           end
-        else
+        elsif definitions[key].key?('properties')
           merge_refs!(ret,
                       properties(definitions[key].properties,
                                  definitions[key].required, prefix))
