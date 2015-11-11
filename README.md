@@ -57,8 +57,8 @@ Specifications can be any
   `http://host.domain/swagger.yml`)
 - a Hash containing a parsed Swagger specification (*e.g.*, the output of
   `JSON.parse`)
-- a string of JSON containing Swagger specification
-- a string of YAML containing Swagger specification
+- a string of JSON containing a Swagger specification
+- a string of YAML containing a Swagger specification
 
 ### RSpec
 
@@ -85,14 +85,14 @@ request parameters, and response attributes; *e.g.*,
 ```ruby
 { endpoints: ['put /a/{}'],
   request_params: {
-    'get /a/' => ['missing request param: limit (type: integer)'],
+    'get /a/' => ['missing request param: limit (in: query, type: integer)'],
     'post /a/' => ['new required request param: extra'],
     'put /b/{}' => ['new required request param: extra']
   },
   response_attributes: {
-    'post /a/' => ['missing attribute from 200 response: description (type: string)'],
-    'get /a/{}' => ['missing attribute from 200 response: description (type: string)'],
-    'put /b/{}' => ['missing attribute from 200 response: description (type: string)']
+    'post /a/' => ['missing attribute from 200 response: description (in: body, type: string)'],
+    'get /a/{}' => ['missing attribute from 200 response: description (in: body, type: string)'],
+    'put /b/{}' => ['missing attribute from 200 response: description (in: body, type: string)']
   }
 }
 ```
