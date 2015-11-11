@@ -178,56 +178,103 @@ describe Swagger::Diff::Specification do
     end
   end
 
-  describe 'formData' do
+  context 'with JSON' do
+    let(:paths) { {} }
+    let(:definitions) { {} }
     let(:parsed) do
       { 'swagger' => '2.0',
         'info' => { 'title' => 'Swagger Fixture', 'version' => '1.0' },
-        'paths' =>
-       { '/a/' =>
-        { 'post' =>
-         { 'parameters' =>
-          [{ 'name' => 'w',
-             'in' => 'formData',
-             'required' => false,
-             'type' => 'string' },
-           { 'name' => 'x',
-             'in' => 'formData',
-             'required' => true,
-             'type' => 'string' }],
-           'responses' =>
-          { '204' => {} } } } } }
+        'paths' => paths,
+        'definitions' => definitions }
     end
-    let(:spec) do
-      Swagger::Diff::Specification.new(parsed)
-    end
+    let(:spec) { Swagger::Diff::Specification.new(parsed) }
 
-    it 'parses params' do
-      expect(spec.request_params)
-        .to eq('post /a/' => { required: Set.new(['x']),
-                               all: Set.new(['w (in: formData, type: string)',
-                                             'x (in: formData, type: string)']) })
-    end
-  end
-
-  describe 'definitions' do
-    let(:parsed) do
-      { 'swagger' => '2.0',
-        'info' => { 'title' => 'Swagger Fixture', 'version' => '1.0' },
-        'paths' =>
+    describe 'definitions' do
+      let(:paths) do
         { '/a/' =>
           { 'get' =>
             { 'responses' =>
               { '200' =>
-                { 'schema' => { '$ref' => '#/definitions/no_props' } } } } } },
-        'definitions' =>
-        { 'no_props' => { 'type' => 'object' } } }
-    end
-    let(:spec) do
-      Swagger::Diff::Specification.new(parsed)
+                { 'schema' => { '$ref' => '#/definitions/no_props' } } } } } }
+      end
+      let(:definitions) do
+        { 'no_props' => { 'type' => 'object' } }
+      end
+
+      it 'can be parsed without properties' do
+        expect { spec.response_attributes }.not_to raise_error
+      end
     end
 
-    it 'can be parsed without properties' do
-      expect { spec.response_attributes }.not_to raise_error
+    describe 'formData' do
+      let(:paths) do
+        { '/a/' =>
+          { 'post' =>
+            { 'parameters' =>
+              [{ 'name' => 'w',
+                 'in' => 'formData',
+                 'required' => false,
+                 'type' => 'string' },
+               { 'name' => 'x',
+                 'in' => 'formData',
+                 'required' => true,
+                 'type' => 'string' }],
+              'responses' =>
+              { '204' => {} } } } }
+      end
+
+      it 'parses params' do
+        expect(spec.request_params)
+          .to eq('post /a/' => { required: Set.new(['x']),
+                                 all: Set.new(['w (in: formData, type: string)',
+                                               'x (in: formData, type: string)']) })
+      end
+    end
+
+    describe 'responses' do
+      let(:paths) do
+        { '/a/' =>
+          { 'get' =>
+            { 'responses' =>
+              { '200' =>
+                { 'schema' =>
+                  { 'properties' =>
+                    { 'b' => { 'type' => 'string' } } } },
+                '201' =>
+                { 'schema' =>
+                  { 'allOf' =>
+                    [{ '$ref' => '#/definitions/c' },
+                     { '$ref' => '#/definitions/d' }] } },
+                '202' =>
+                { 'schema' =>
+                  { 'type' => 'array',
+                    'items' => { '$ref' => '#/definitions/e' } } },
+                '203' =>
+                { 'schema' =>
+                  { 'type' => 'array',
+                    'items' =>
+                    { 'type' => 'object',
+                      'additionalProperties' =>
+                      { 'type' => 'string' } } } } } } } }
+      end
+      let(:definitions) do
+        { 'c' => { 'type' => 'object',
+                   'properties' => { 'cc' => { 'type' => 'string' } } },
+          'd' => { 'type' => 'object',
+                   'properties' => { 'dd' => { 'type' => 'string' } } },
+          'e' => { 'type' => 'object',
+                   'properties' => { 'ee' => { 'type' => 'string' } } } }
+      end
+
+      it 'parses without a $ref' do
+        expect(spec.response_attributes)
+          .to eq('get /a/' =>
+                 { '200' => Set.new(['b (in: body, type: string)']),
+                   '201' => Set.new(['cc (in: body, type: string)',
+                                     'dd (in: body, type: string)']),
+                   '202' => Set.new(['[]/ee (in: body, type: string)']),
+                   '203' => Set.new(['[] (in: body, type: Hash[string, string])']) })
+      end
     end
   end
 end

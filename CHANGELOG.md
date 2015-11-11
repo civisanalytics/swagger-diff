@@ -6,6 +6,8 @@
 
 * [#14](https://github.com/civisanalytics/swagger-diff/pull/14)
   allow schema definitions without properties
+* [#15](https://github.com/civisanalytics/swagger-diff/pull/15)
+  parse non-ref response schemas (`allOf`, `properties`, and `items`)
 
 ## 1.0.3 (2015-11-04)
 
