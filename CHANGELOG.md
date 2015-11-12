@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.0.5 (TBD)
+
+### Bugs Fixed
+
+* [#18](https://github.com/civisanalytics/swagger-diff/pull/18)
+  parse non-ref parameter schemas (`allOf`, `properties`, and `items`)
+
 ## 1.0.4 (2015-11-11)
 
 ### Bugs Fixed

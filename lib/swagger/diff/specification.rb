@@ -192,7 +192,7 @@ module Swagger
         return ret if params.nil?
         params.each do |param|
           if param.in == 'body'
-            merge_refs!(ret, refs(param.schema['$ref']))
+            merge_refs!(ret, schema(param.schema))
           else
             ret[:required].add(param.name) if param.required
             ret[:all].add("#{param.name} (in: #{param.in}, type: #{param.type})")
