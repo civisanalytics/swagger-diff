@@ -231,6 +231,30 @@ describe Swagger::Diff::Specification do
       end
     end
 
+    describe 'parameters' do
+      let(:paths) do
+        { '/a/' =>
+          { 'post' =>
+            { 'parameters' =>
+              [{ 'name' => 'body',
+                 'in' => 'body',
+                 'schema' =>
+                 { 'items' => { '$ref' => '#/definitions/body' },
+                   'type' => 'array' } }],
+              'responses' => { '204' => {} } } } }
+      end
+      let(:definitions) do
+        { 'body' => { 'type' => 'object',
+                      'properties' => { 'b' => { 'type' => 'string' } } } }
+      end
+
+      it 'parses body params that are arrays' do
+        expect(spec.request_params)
+          .to eq('post /a/' => { required: Set.new,
+                                 all: Set.new(['[]/b (in: body, type: string)']) })
+      end
+    end
+
     describe 'responses' do
       let(:paths) do
         { '/a/' =>
