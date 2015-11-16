@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.0.5 (TBD)
+## 1.0.5 (2015-11-16)
 
 ### Bugs Fixed
 
