@@ -5,6 +5,7 @@
 ### Changes
 
 * Added a [Code of Conduct](CODE_OF_CONDUCT.md)
+* Bumped the RuboCop version for development to 0.38
 
 ## 1.0.5 (2015-11-16)
 

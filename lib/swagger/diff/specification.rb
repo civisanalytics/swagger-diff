@@ -204,11 +204,11 @@ module Swagger
       def response_attributes_inner(endpoint)
         ret = {}
         endpoint.responses.each do |code, response|
-          if response.schema
-            ret[code] = schema(response.schema)[:all]
-          else
-            ret[code] = Set.new
-          end
+          ret[code] = if response.schema
+                        schema(response.schema)[:all]
+                      else
+                        Set.new
+                      end
         end
         ret
       end
