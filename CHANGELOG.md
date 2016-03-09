@@ -5,6 +5,9 @@
 ### Changes
 
 * Added a [Code of Conduct](CODE_OF_CONDUCT.md)
+* Made the Ruby 2.0+ dependency explicit
+* Added a matrix build of 2.0, 2.1, 2.2, and 2.3 to Travis
+* Bumped the Ruby version for development to 2.3.0
 * Bumped the RuboCop version for development to 0.38
 
 ## 1.0.5 (2015-11-16)
