@@ -8,7 +8,7 @@
 # [2] http://swagger.io/specification/#securityDefinitionsObject
 # [3] https://github.com/swagger-api/validator-badge
 
-OAUTH2_PARAMS = [:flow, :authorizationUrl, :scopes]
+OAUTH2_PARAMS = [:flow, :authorizationUrl, :scopes].freeze
 
 Swagger::V2::SecurityScheme.required_properties.reject! do |k, _|
   OAUTH2_PARAMS.include?(k)
