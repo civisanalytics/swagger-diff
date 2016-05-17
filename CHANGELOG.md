@@ -19,6 +19,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * [#27](https://github.com/civisanalytics/swagger-diff/pull/27)
   made the Ruby 2.0+ dependency explicit
+* [#32](https://github.com/civisanalytics/swagger-diff/pull/32)
+  replaced the Swagger parser
 
 ## [1.0.5] - 2015-11-16
 

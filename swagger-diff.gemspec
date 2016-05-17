@@ -24,7 +24,6 @@ and helper functions that can be used directly.'
 
   spec.required_ruby_version = '~> 2.0'
 
-  spec.add_dependency 'swagger-core', '~> 0.2.3'
   spec.add_dependency 'rspec-expectations', '~> 3.3'
   spec.add_development_dependency 'bundler', '~> 1.9'
   spec.add_development_dependency 'rake', '~> 10.4'

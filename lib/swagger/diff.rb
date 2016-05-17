@@ -1,8 +1,9 @@
-require 'forwardable' # Needed to require swagger-core.
-require 'swagger'
+require 'json'
+require 'open-uri'
+require 'set'
+require 'yaml'
 require 'rspec/expectations'
 require 'swagger/diff/diff'
-require 'swagger/diff/patch'
 require 'swagger/diff/rspec_matchers'
 require 'swagger/diff/specification'
 require 'swagger/diff/version'

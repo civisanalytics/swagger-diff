@@ -182,9 +182,9 @@
       "properties": {
         "thing": { "type": "integer" },
         "name": { "type": "string" },
-        "self": { "$ref": "#definitions/A5" },
+        "self": { "$ref": "#/definitions/A5" },
         "selfs": { "type": "array",
-                   "items": { "$ref": "#definitions/A5" }
+                   "items": { "$ref": "#/definitions/A5" }
         }
       }
     },

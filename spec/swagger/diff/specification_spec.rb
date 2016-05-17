@@ -15,7 +15,8 @@ describe Swagger::Diff::Specification do
       endpoint_hash = spec.instance_variable_get(:@endpoint_hash)
       expect(endpoint_hash.keys)
         .to eq(['get /pets', 'post /pets', 'get /pets/{}', 'delete /pets/{}'])
-      expect(endpoint_hash['get /pets'].class).to eq(Swagger::V2::Operation)
+      expect(endpoint_hash['get /pets'].keys)
+        .to eq(%w(description operationId externalDocs produces parameters responses))
       expect(endpoint_hash['get /pets']).not_to eq(endpoint_hash['post /pets'])
     end
   end
@@ -23,32 +24,32 @@ describe Swagger::Diff::Specification do
   describe '#parse_swagger' do
     it 'from file' do
       spec = Swagger::Diff::Specification.new('spec/fixtures/petstore.json')
-      expect(spec.instance_variable_get(:@parsed).class).to eq(Swagger::V2::API)
+      expect(spec.instance_variable_get(:@parsed)['swagger']).to eq('2.0')
     end
 
     it 'from JSON string' do
       contents = File.open('spec/fixtures/petstore.json', 'r').read
       spec = Swagger::Diff::Specification.new(contents)
-      expect(spec.instance_variable_get(:@parsed).class).to eq(Swagger::V2::API)
+      expect(spec.instance_variable_get(:@parsed)['swagger']).to eq('2.0')
     end
 
     it 'from YAML string' do
       contents = File.open('spec/fixtures/petstore.yaml', 'r').read
       spec = Swagger::Diff::Specification.new(contents)
-      expect(spec.instance_variable_get(:@parsed).class).to eq(Swagger::V2::API)
+      expect(spec.instance_variable_get(:@parsed)['swagger']).to eq('2.0')
     end
 
     it 'from Hash' do
       contents = File.open('spec/fixtures/petstore.json', 'r').read
       hash = JSON.parse(contents)
       spec = Swagger::Diff::Specification.new(hash)
-      expect(spec.instance_variable_get(:@parsed).class).to eq(Swagger::V2::API)
+      expect(spec.instance_variable_get(:@parsed)['swagger']).to eq('2.0')
     end
 
     it 'from URL' do
       VCR.use_cassette('petstore') do
         spec = Swagger::Diff::Specification.new('https://raw.githubusercontent.com/swagger-api/swagger-spec/master/examples/v2.0/json/petstore.json')
-        expect(spec.instance_variable_get(:@parsed).class).to eq(Swagger::V2::API)
+        expect(spec.instance_variable_get(:@parsed)['swagger']).to eq('2.0')
       end
     end
 
@@ -181,11 +182,15 @@ describe Swagger::Diff::Specification do
   context 'with JSON' do
     let(:paths) { {} }
     let(:definitions) { {} }
+    let(:parameters) { {} }
+    let(:responses) { {} }
     let(:parsed) do
       { 'swagger' => '2.0',
         'info' => { 'title' => 'Swagger Fixture', 'version' => '1.0' },
         'paths' => paths,
-        'definitions' => definitions }
+        'definitions' => definitions,
+        'parameters' => parameters,
+        'responses' => responses }
     end
     let(:spec) { Swagger::Diff::Specification.new(parsed) }
 
@@ -255,6 +260,79 @@ describe Swagger::Diff::Specification do
       end
     end
 
+    describe 'parameter refs' do
+      let(:paths) do
+        { '/a/{id}/b/{guid}' =>
+          { 'get' =>
+            { 'parameters' => [{ '$ref' => '#/parameters/id' },
+                               { '$ref' => '#/parameters/guid' },
+                               { '$ref' => '#/parameters/format' }],
+              'responses' => { '204' => {} } } } }
+      end
+      let(:parameters) do
+        { 'id' => { 'name' => 'id',
+                    'in' => 'path',
+                    'type' => 'integer',
+                    'required' => true },
+          'guid' => { 'name' => 'guid',
+                      'in' => 'path',
+                      'type' => 'string',
+                      'required' => true },
+          'format' => { 'name' => 'format',
+                        'in' => 'query',
+                        'type' => 'string',
+                        'required' => false } }
+      end
+
+      it 'dereferences parameters' do
+        expect(spec.request_params)
+          .to eq('get /a/{}/b/{}' =>
+                 { required: Set.new(%w(id guid)),
+                   all: Set.new(['id (in: path, type: integer)',
+                                 'guid (in: path, type: string)',
+                                 'format (in: query, type: string)']) })
+      end
+    end
+
+    describe 'shared parameters' do
+      let(:paths) do
+        { '/a/{id}' =>
+          { 'get' =>
+            { 'parameters' => [{ 'name' => 'foo',
+                                 'in' => 'query',
+                                 'required' => false,
+                                 'type' => 'string' }],
+              'responses' => { '204' => {} } },
+            'delete' =>
+            { 'responses' => { '204' => {} } },
+            'parameters' => [{ '$ref' => '#/parameters/id' },
+                             { '$ref' => '#/parameters/format' }] } }
+      end
+      let(:parameters) do
+        { 'id' => { 'name' => 'id',
+                    'in' => 'path',
+                    'type' => 'integer',
+                    'required' => true },
+          'format' => { 'name' => 'format',
+                        'in' => 'query',
+                        'type' => 'string',
+                        'required' => false } }
+      end
+
+      it 'are shared and merged' do
+        expect(spec.request_params)
+          .to eq('get /a/{}' =>
+                 { required: Set.new(['id']),
+                   all: Set.new(['foo (in: query, type: string)',
+                                 'id (in: path, type: integer)',
+                                 'format (in: query, type: string)']) },
+                 'delete /a/{}' =>
+                 { required: Set.new(['id']),
+                   all: Set.new(['id (in: path, type: integer)',
+                                 'format (in: query, type: string)']) })
+      end
+    end
+
     describe 'responses' do
       let(:paths) do
         { '/a/' =>
@@ -298,6 +376,30 @@ describe Swagger::Diff::Specification do
                                      'dd (in: body, type: string)']),
                    '202' => Set.new(['[]/ee (in: body, type: string)']),
                    '203' => Set.new(['[] (in: body, type: Hash[string, string])']) })
+      end
+    end
+
+    describe 'response refs' do
+      let(:paths) do
+        { '/a/' =>
+          { 'get' =>
+            { 'responses' =>
+              { '200' =>
+                { '$ref' => '#/responses/200' } } } } }
+      end
+      let(:responses) do
+        { '200' => { 'description' => 'A generic response',
+                     'schema' => { 'required' => %w(id name),
+                                   'properties' =>
+                                   { 'id' => { 'type' => 'integer' },
+                                     'name' => { 'type' => 'string' } } } } }
+      end
+
+      it 'dereferences responses' do
+        expect(spec.response_attributes)
+          .to eq('get /a/' =>
+                 { '200' => Set.new(['id (in: body, type: integer)',
+                                     'name (in: body, type: string)']) })
       end
     end
   end
