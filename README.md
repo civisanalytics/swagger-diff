@@ -47,10 +47,7 @@ Or install it yourself as:
 
 ## Usage
 
-Swagger::Diff uses the [Swagger](https://github.com/swagger-rb/swagger-rb) gem
-to parse Swagger specifications.
-Specifications can be any
-[supported format](https://github.com/swagger-rb/swagger-rb/tree/v0.2.3#parsing):
+Swagger specifications can be any valid Swagger file format, raw or parsed:
 
 - the path to a file containing a Swagger specification.
   This may be local (*e.g.*, `/path/to/swagger.json`) or remote (*e.g.*,
