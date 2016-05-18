@@ -202,12 +202,24 @@ describe Swagger::Diff::Specification do
           { 'get' =>
             { 'responses' =>
               { '200' =>
-                { 'schema' => { '$ref' => '#/other/200' } } } } } }
+                { 'description' => '200 response',
+                  'schema' => { '$ref' => '#/other/200' } } } } } }
       end
 
       it 'generates a warning' do
         expect { spec.response_attributes }
           .to output("Unsupported ref '#/other/200' (expected definitions, parameters, or responses)\n").to_stderr
+      end
+    end
+
+    describe 'invalid specification' do
+      let(:paths) do
+        { '/a/' =>
+          { 'get' => {} } }
+      end
+
+      it 'generates a warning' do
+        expect { spec }.to output(/is not a valid Swagger specification/).to_stderr
       end
     end
 
@@ -217,7 +229,8 @@ describe Swagger::Diff::Specification do
           { 'get' =>
             { 'responses' =>
               { '200' =>
-                { 'schema' => { '$ref' => '#/definitions/no_props' } } } } } }
+                { 'description' => '200 response',
+                  'schema' => { '$ref' => '#/definitions/no_props' } } } } } }
       end
       let(:definitions) do
         { 'no_props' => { 'type' => 'object' } }
@@ -242,7 +255,7 @@ describe Swagger::Diff::Specification do
                  'required' => true,
                  'type' => 'string' }],
               'responses' =>
-              { '204' => {} } } } }
+              { '204' => { 'description' => '204 response' } } } } }
       end
 
       it 'parses params' do
@@ -263,7 +276,8 @@ describe Swagger::Diff::Specification do
                  'schema' =>
                  { 'items' => { '$ref' => '#/definitions/body' },
                    'type' => 'array' } }],
-              'responses' => { '204' => {} } } } }
+              'responses' =>
+              { '204' => { 'description' => '204 response' } } } } }
       end
       let(:definitions) do
         { 'body' => { 'type' => 'object',
@@ -284,7 +298,7 @@ describe Swagger::Diff::Specification do
             { 'parameters' => [{ '$ref' => '#/parameters/id' },
                                { '$ref' => '#/parameters/guid' },
                                { '$ref' => '#/parameters/format' }],
-              'responses' => { '204' => {} } } } }
+              'responses' => { '204' => { 'description' => '204 response' } } } } }
       end
       let(:parameters) do
         { 'id' => { 'name' => 'id',
@@ -319,9 +333,9 @@ describe Swagger::Diff::Specification do
                                  'in' => 'query',
                                  'required' => false,
                                  'type' => 'string' }],
-              'responses' => { '204' => {} } },
+              'responses' => { '204' => { 'description' => '204 response' } } },
             'delete' =>
-            { 'responses' => { '204' => {} } },
+            { 'responses' => { '204' => { 'description' => '204 response' } } },
             'parameters' => [{ '$ref' => '#/parameters/id' },
                              { '$ref' => '#/parameters/format' }] } }
       end
@@ -356,20 +370,24 @@ describe Swagger::Diff::Specification do
           { 'get' =>
             { 'responses' =>
               { '200' =>
-                { 'schema' =>
+                { 'description' => '200 response',
+                  'schema' =>
                   { 'properties' =>
                     { 'b' => { 'type' => 'string' } } } },
                 '201' =>
-                { 'schema' =>
+                { 'description' => '201 response',
+                  'schema' =>
                   { 'allOf' =>
                     [{ '$ref' => '#/definitions/c' },
                      { '$ref' => '#/definitions/d' }] } },
                 '202' =>
-                { 'schema' =>
+                { 'description' => '202 response',
+                  'schema' =>
                   { 'type' => 'array',
                     'items' => { '$ref' => '#/definitions/e' } } },
                 '203' =>
-                { 'schema' =>
+                { 'description' => '203 response',
+                  'schema' =>
                   { 'type' => 'array',
                     'items' =>
                     { 'type' => 'object',

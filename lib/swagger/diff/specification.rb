@@ -4,6 +4,7 @@ module Swagger
       def initialize(spec)
         @spec = spec
         @parsed = parse_swagger(spec)
+        validate_swagger
         @endpoint_hash = parsed_to_hash(@parsed)
       end
 
@@ -256,6 +257,22 @@ module Swagger
                       end
         end
         ret
+      end
+
+      def validate_swagger
+        schema_file = File.join(
+          File.expand_path(File.join('..', '..', '..', '..'), __FILE__),
+          'schema', 'schema.json'
+        )
+        schema = open(schema_file).read
+        unless JSON::Validator.validate(schema, JSON.dump(@parsed))
+          spec = if @spec.length > 80
+                   "#{@spec[0..76]}..."
+                 else
+                   @spec
+                 end
+          warn "#{spec} is not a valid Swagger specification"
+        end
       end
     end
   end

@@ -256,7 +256,7 @@ describe Swagger::Diff::Diff do
           { '/a/' =>
             { 'get' =>
               { 'responses' =>
-                { '204' => {} } } } }
+                { '204' => { 'description' => '204 response' } } } } }
         end
 
         describe 'added' do
@@ -277,13 +277,13 @@ describe Swagger::Diff::Diff do
           { '/a/' =>
             { 'get' =>
               { 'parameters' => new_parameters,
-                'responses' => { '204' => {} } } } }
+                'responses' => { '204' => { 'description' => '204 response' } } } } }
         end
         let(:old_paths) do
           { '/a/' =>
             { 'get' =>
               { 'parameters' => old_parameters,
-                'responses' => { '204' => {} } } } }
+                'responses' => { '204' => { 'description' => '204 response' } } } } }
         end
         let(:new_parameters) { [] }
         let(:old_parameters) { [] }
@@ -390,14 +390,14 @@ describe Swagger::Diff::Diff do
           { '/a/' =>
             { 'get' =>
               { 'responses' =>
-                { '200' => {} } } } }
+                { '200' => { 'description' => '200 response' } } } } }
         end
         let(:added_paths) do
           { '/a/' =>
             { 'get' =>
               { 'responses' =>
-                { '200' => {},
-                  '204' => {} } } } }
+                { '200' => { 'description' => '200 response' },
+                  '204' => { 'description' => '204 response' } } } } }
         end
 
         describe 'added' do
@@ -427,20 +427,19 @@ describe Swagger::Diff::Diff do
             { 'get' =>
               { 'responses' =>
                 { '200' =>
-                  { 'schema' =>
+                  { 'description' => '200 response',
+                    'schema' =>
                     { '$ref' => '#/definitions/200' } } } } } }
         end
         let(:old_paths) { new_paths }
         let(:added_definitions) do
           { '200' => { 'type' => 'object',
-                       'required' => [],
                        'properties' =>
                        { 'id' => { 'type' => 'integer' },
                          'name' => { 'type' => 'string' } } } }
         end
         let(:removed_definitions) do
           { '200' => { 'type' => 'object',
-                       'required' => [],
                        'properties' =>
                        { 'id' => { 'type' => 'integer' } } } }
         end

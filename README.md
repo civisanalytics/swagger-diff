@@ -160,3 +160,10 @@ See [CONTRIBUTING](CONTRIBUTING.md).
 ## License
 
 Swagger::Diff is released under the [BSD 3-Clause License](LICENSE.txt).
+
+## OpenAPI (fka Swagger) Specification License
+
+Swagger::Diff includes an
+[unmodified copy of the OpenAPI Specification](schema/schema.json).
+The OpenAPI Specification is licensed under the
+[Apache License, Version 2.0](schema/LICENSE).

@@ -2,7 +2,7 @@ Metrics/AbcSize:
   Max: 30
 
 Metrics/ClassLength:
-  Max: 220
+  Max: 240
 
 Metrics/LineLength:
   Max: 120
