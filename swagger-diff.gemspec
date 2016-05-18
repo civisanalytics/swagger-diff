@@ -9,11 +9,15 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Jeff Cousens']
   spec.email         = ['opensource@civisanalytics.com']
 
-  spec.summary       = 'Utility for comparing two Swagger specifications.'
-  spec.description   = 'Swagger::Diff is a utility for comparing two different Swagger specifications.
-It is intended to determine whether a newer API specification is backwards-
-compatible with an older API specification. It provides both an RSpec matcher
-and helper functions that can be used directly.'
+  spec.summary       = 'Utility for comparing two OAI (fka Swagger) specifications.'
+  spec.description   = 'Swagger::Diff is a utility for comparing two ' \
+                       'different Open API Initiative (OAI) specifications ' \
+                       '(fka Swagger specifications). ' \
+                       'It is intended to determine whether a newer API ' \
+                       'specification is backwards-compatible with an ' \
+                       'older API specification. ' \
+                       'It provides both an RSpec matcher and helper ' \
+                       'functions that can be used directly.'
   spec.homepage      = 'https://github.com/civisanalytics/swagger-diff'
   spec.license       = 'BSD 3-Clause'
 
