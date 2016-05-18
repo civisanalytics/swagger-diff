@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Bumped the Ruby version for development to 2.3.1
 * Bumped the RuboCop version for development to 0.40
+* Bumped the WebMock version for development to 2.0
 
 ### Fixed
 
