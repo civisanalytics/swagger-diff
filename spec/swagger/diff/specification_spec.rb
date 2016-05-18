@@ -95,7 +95,8 @@ describe Swagger::Diff::Specification do
                                'obj/selfs[]/self/self (in: body, type: reference)',
                                'obj/selfs[]/self/selfs[] (in: body, type: reference)',
                                'obj/selfs[]/selfs[] (in: body, type: reference)',
-                               'str (in: body, type: string)']) },
+                               'str (in: body, type: string)'])
+               },
                'put /a/{}' => { required: Set.new(%w(id name description)),
                                 all: Set.new(['id (in: path, type: integer)',
                                               'name (in: body, type: string)',
@@ -166,7 +167,8 @@ describe Swagger::Diff::Specification do
                                    'objs[]/selfs[]/self/self (in: body, type: reference)',
                                    'objs[]/selfs[]/self/selfs[] (in: body, type: reference)',
                                    'objs[]/selfs[]/selfs[] (in: body, type: reference)',
-                                   'str (in: body, type: string)']) },
+                                   'str (in: body, type: string)'])
+               },
                'post /b/' => { '200' => Set.new(['id (in: body, type: integer)',
                                                  'name (in: body, type: string)']) },
                'put /b/{}' => { '200' => Set.new(['id (in: body, type: integer)',
