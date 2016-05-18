@@ -12,7 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-* Bumped the Ruby version for development to 2.3.0
+* Bumped the Ruby version for development to 2.3.1
 * Bumped the RuboCop version for development to 0.38
 
 ### Fixed
