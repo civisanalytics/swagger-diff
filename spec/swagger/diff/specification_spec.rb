@@ -402,5 +402,17 @@ describe Swagger::Diff::Specification do
                                      'name (in: body, type: string)']) })
       end
     end
+
+    describe 'external path item' do
+      let(:paths) do
+        { '/a/' => { '$ref' => '...' } }
+      end
+
+      it 'warns' do
+        expect_any_instance_of(Swagger::Diff::Specification)
+          .to receive(:warn).with('External definitions are not (yet) supported')
+        spec
+      end
+    end
   end
 end
