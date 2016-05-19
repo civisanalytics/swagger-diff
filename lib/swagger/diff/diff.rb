@@ -35,11 +35,9 @@ module Swagger
 
       def incompatibilities_message
         msg = ''
-        msg += endpoints_message('missing', incompatibilities[:endpoints]) if incompatibilities[:endpoints]
-        msg += params_message('incompatible', incompatibilities[:request_params]) if incompatibilities[:request_params]
-        if incompatibilities[:response_attributes]
-          msg += attributes_message('incompatible', incompatibilities[:response_attributes])
-        end
+        msg += endpoints_message('missing', incompatibilities[:endpoints])
+        msg += params_message('incompatible', incompatibilities[:request_params])
+        msg += attributes_message('incompatible', incompatibilities[:response_attributes])
         msg
       end
 
@@ -47,24 +45,22 @@ module Swagger
 
       def changed_endpoints_message
         msg = ''
-        msg += endpoints_message('new', changes[:new_endpoints]) if changes[:new_endpoints]
-        msg += endpoints_message('removed', changes[:removed_endpoints]) if changes[:removed_endpoints]
+        msg += endpoints_message('new', changes[:new_endpoints])
+        msg += endpoints_message('removed', changes[:removed_endpoints])
         msg
       end
 
       def changed_params_message
         msg = ''
-        msg += params_message('new', changes[:new_request_params]) if changes[:new_request_params]
-        msg += params_message('removed', changes[:removed_request_params]) if changes[:removed_request_params]
+        msg += params_message('new', changes[:new_request_params])
+        msg += params_message('removed', changes[:removed_request_params])
         msg
       end
 
       def changed_attrs_message
         msg = ''
-        msg += attributes_message('new', changes[:new_response_attributes]) if changes[:new_response_attributes]
-        if changes[:removed_response_attributes]
-          msg += attributes_message('removed', changes[:removed_response_attributes])
-        end
+        msg += attributes_message('new', changes[:new_response_attributes])
+        msg += attributes_message('removed', changes[:removed_response_attributes])
         msg
       end
 
