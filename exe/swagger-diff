@@ -1,17 +1,49 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
 require 'swagger/diff'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = 'Usage: swagger-diff [options] <old> <new>'
+
+  opts.on('-c', '--changes',
+          'Generate a list of changes between <new>',
+          'and <old>') do |c|
+    options[:changes] = c
+  end
+
+  opts.on('-i', '--incompatibilities',
+          'Checks <new> for backwards-compatibility',
+          'with <old>. If <new> is incompatible, a',
+          'list of incompatibilities will be printed.') do |i|
+    options[:incompatibilities] = i
+  end
+
+  opts.on_tail('-h', '--help', 'This message') do
+    puts opts
+    exit
+  end
+
+  opts.on_tail('-v', '--version', 'Display the version') do
+    puts Swagger::Diff::VERSION
+    exit
+  end
+
+  options[:help] = opts
+end.parse!
 
 if ARGV.length == 2
   diff = Swagger::Diff::Diff.new(ARGV[0], ARGV[1])
 
-  unless diff.compatible?
-    puts diff.incompatibilities_message
-    exit 1
+  if options[:changes]
+    puts diff.changes_message
+  else
+    unless diff.compatible?
+      puts diff.incompatibilities_message
+      exit 1
+    end
   end
 else
-  puts 'Usage: swagger-diff <old> <new>
-
-Checks <new> for backwards-compatibility with <old>. If <new> is incompatible,
-a list of incompatibilities will be printed.'
+  puts options[:help]
 end

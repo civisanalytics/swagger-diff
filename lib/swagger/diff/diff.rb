@@ -6,37 +6,69 @@ module Swagger
         @old_specification = Swagger::Diff::Specification.new(old)
       end
 
+      def changes
+        @changes ||= {
+          new_endpoints: new_endpoints.to_a.sort,
+          removed_endpoints: missing_endpoints.to_a.sort,
+          new_request_params: new_or_changed_request_params,
+          removed_request_params: incompatible_request_params,
+          new_response_attributes: new_or_changed_response_attributes,
+          removed_response_attributes: incompatible_response_attributes
+        }
+      end
+
+      def changes_message
+        changed_endpoints_message + changed_params_message + changed_attrs_message
+      end
+
       def compatible?
         endpoints_compatible? && requests_compatible? && responses_compatible?
       end
 
       def incompatibilities
-        { endpoints: missing_endpoints.to_a.sort,
+        @incompatibilities ||= {
+          endpoints: missing_endpoints.to_a.sort,
           request_params: incompatible_request_params,
-          response_attributes: incompatible_response_attributes }
+          response_attributes: incompatible_response_attributes
+        }
       end
 
       def incompatibilities_message
         msg = ''
-        if incompatibilities[:endpoints]
-          msg += incompatibilities_message_endpoints(incompatibilities[:endpoints])
-        end
-        if incompatibilities[:request_params]
-          msg += incompatibilities_message_params(incompatibilities[:request_params])
-        end
-        if incompatibilities[:response_attributes]
-          msg += incompatibilities_message_attributes(incompatibilities[:response_attributes])
-        end
+        msg += endpoints_message('missing', incompatibilities[:endpoints])
+        msg += params_message('incompatible', incompatibilities[:request_params])
+        msg += attributes_message('incompatible', incompatibilities[:response_attributes])
         msg
       end
 
       private
 
-      def incompatibilities_message_endpoints(endpoints)
+      def changed_endpoints_message
+        msg = ''
+        msg += endpoints_message('new', changes[:new_endpoints])
+        msg += endpoints_message('removed', changes[:removed_endpoints])
+        msg
+      end
+
+      def changed_params_message
+        msg = ''
+        msg += params_message('new', changes[:new_request_params])
+        msg += params_message('removed', changes[:removed_request_params])
+        msg
+      end
+
+      def changed_attrs_message
+        msg = ''
+        msg += attributes_message('new', changes[:new_response_attributes])
+        msg += attributes_message('removed', changes[:removed_response_attributes])
+        msg
+      end
+
+      def endpoints_message(type, endpoints)
         if endpoints.empty?
           ''
         else
-          msg = "- missing endpoints\n"
+          msg = "- #{type} endpoints\n"
           endpoints.each do |endpoint|
             msg += "  - #{endpoint}\n"
           end
@@ -44,11 +76,11 @@ module Swagger
         end
       end
 
-      def incompatibilities_message_inner(typestr, collection)
+      def inner_message(nature, type, collection)
         if collection.nil? || collection.empty?
           ''
         else
-          msg = "- incompatible #{typestr}\n"
+          msg = "- #{nature} #{type}\n"
           collection.sort.each do |endpoint, attributes|
             msg += "  - #{endpoint}\n"
             attributes.each do |attribute|
@@ -59,25 +91,43 @@ module Swagger
         end
       end
 
-      def incompatibilities_message_params(params)
-        incompatibilities_message_inner('request params', params)
+      def params_message(type, params)
+        inner_message(type, 'request params', params)
       end
 
-      def incompatibilities_message_attributes(attributes)
-        incompatibilities_message_inner('response attributes', attributes)
+      def attributes_message(type, attributes)
+        inner_message(type, 'response attributes', attributes)
       end
 
       def missing_endpoints
         @old_specification.endpoints - @new_specification.endpoints
       end
 
-      def incompatible_request_params
+      def new_endpoints
+        @new_specification.endpoints - @old_specification.endpoints
+      end
+
+      def change_hash(enumerator)
         ret = {}
-        incompatible_request_params_enumerator.each do |key, val|
+        enumerator.each do |key, val|
           ret[key] ||= []
           ret[key] << val
         end
         ret
+      end
+
+      def incompatible_request_params
+        change_hash(incompatible_request_params_enumerator)
+      end
+
+      def new_or_changed_request_params
+        enumerator = changed_request_params_enumerator(
+          @new_specification,
+          @old_specification,
+          '%{req} is no longer required',
+          'new request param: %{req}'
+        )
+        change_hash(enumerator)
       end
 
       def new_child?(req, old)
@@ -87,47 +137,70 @@ module Swagger
         !old.any? { |param| param.start_with?(key) }
       end
 
-      def incompatible_request_params_enumerator
+      def changed_request_params_enumerator(from, to, req_msg, missing_msg)
         Enumerator.new do |yielder|
-          @old_specification.request_params.each do |key, old_params|
-            new_params = @new_specification.request_params[key]
+          from.request_params.each do |key, old_params|
+            new_params = to.request_params[key]
             next if new_params.nil?
             (new_params[:required] - old_params[:required]).each do |req|
               next if new_child?(req, old_params[:all])
-              yielder << [key, "new required request param: #{req}"]
+              yielder << [key, req_msg % { req: req }]
             end
             (old_params[:all] - new_params[:all]).each do |req|
-              yielder << [key, "missing request param: #{req}"]
+              yielder << [key, missing_msg % { req: req }]
             end
           end
         end.lazy
       end
 
-      def incompatible_response_attributes
-        ret = {}
-        incompatible_response_attributes_enumerator.each do |key, val|
-          ret[key] ||= []
-          ret[key] << val
-        end
-        ret
+      def incompatible_request_params_enumerator
+        changed_request_params_enumerator(
+          @old_specification,
+          @new_specification,
+          'new required request param: %{req}',
+          'missing request param: %{req}'
+        )
       end
 
-      def incompatible_response_attributes_enumerator
+      def incompatible_response_attributes
+        change_hash(incompatible_response_attributes_enumerator)
+      end
+
+      def new_or_changed_response_attributes
+        enumerator = changed_response_attributes_enumerator(
+          @new_specification,
+          @old_specification,
+          'new attribute for %{code} response: %{resp}',
+          'new %{code} response'
+        )
+        change_hash(enumerator)
+      end
+
+      def changed_response_attributes_enumerator(from, to, attr_msg, code_msg)
         Enumerator.new do |yielder|
-          @old_specification.response_attributes.each do |key, old_attributes|
-            new_attributes = @new_specification.response_attributes[key]
+          from.response_attributes.each do |key, old_attributes|
+            new_attributes = to.response_attributes[key]
             next if new_attributes.nil?
             old_attributes.keys.each do |code|
               if new_attributes.key?(code)
                 (old_attributes[code] - new_attributes[code]).each do |resp|
-                  yielder << [key, "missing attribute from #{code} response: #{resp}"]
+                  yielder << [key, attr_msg % { code: code, resp: resp }]
                 end
               else
-                yielder << [key, "missing #{code} response"]
+                yielder << [key, code_msg % { code: code }]
               end
             end
           end
         end.lazy
+      end
+
+      def incompatible_response_attributes_enumerator
+        changed_response_attributes_enumerator(
+          @old_specification,
+          @new_specification,
+          'missing attribute from %{code} response: %{resp}',
+          'missing %{code} response'
+        )
       end
 
       def endpoints_compatible?

@@ -28,6 +28,9 @@ Specifications are considered backwards compatible if:
 - all response attributes in the old specification have the same type in the new
   one
 
+It can also be used to enumerate all changes between two specifications (*i.e.*,
+to generate a changelog).
+
 Read more on the [Civis Analytics blog](https://civisanalytics.com/blog/engineering/2015/10/02/using-swagger-to-detect-breaking-api-changes/).
 
 ## Installation
@@ -95,16 +98,52 @@ request parameters, and response attributes; *e.g.*,
 }
 ```
 
+You can also directly invoke the changes function:
+
+```ruby
+diff = Swagger::Diff::Diff.new(<old>, <new>)
+diff.changes
+```
+
+`#changes` will return a hash containing the changed endpoints, request
+parameters, and response attributes; *e.g.*,
+
+```ruby
+{ new_endpoints: ['delete /pets/{}', 'get /pets/{}', 'post /pets'],
+  new_request_params: {
+    'get /pets' => ['new request param: tags (in: query, type: array)',
+                    'new request param: limit (in: query, type: integer)'] },
+  new_response_attributes: {},
+  removed_endpoints: [],
+  removed_request_params: {},
+  removed_response_attributes: {}
+}
+```
+
 ### Command-Line
 
 It also includes a command-line version:
 
 ```bash
-$ swagger-diff <old> <new>
+$ swagger-diff -i <old> <new>
 ```
 
 `swagger-diff` will print a list of any backwards-incompatibilities `new` has
 when compared to `old`.
+
+For backwards-compatibility with previous versions of `swagger-diff`, the `-i`
+argument is optional:
+
+```bash
+$ swagger-diff <old> <new>
+```
+
+The command-line version can also be used to generate a list of all changes
+(*i.e.*, a changelog):
+
+```bash
+$ swagger-diff -c <old> <new>
+```
 
 ## Gem Development
 

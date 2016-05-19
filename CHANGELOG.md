@@ -9,6 +9,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Added a [Code of Conduct](CODE_OF_CONDUCT.md)
 * Added a matrix build of 2.0, 2.1, 2.2, and 2.3 to Travis
+* [#33](https://github.com/civisanalytics/swagger-diff/pull/33)
+  Added a changelog feature
 
 ### Changed
 
