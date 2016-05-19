@@ -25,12 +25,14 @@ describe Swagger::Diff::Diff do
              request_params: {
                'get /a/' => ['missing request param: limit (in: query, type: integer)'],
                'post /a/' => ['new required request param: extra'],
-               'patch /a/{}' => ['missing request param: name (in: body, type: ["string", "null"])',
-                                 'missing request param: obj/thing (in: body, type: integer)',
-                                 'missing request param: str (in: body, type: string)'
-                                ],
+               'patch /a/{}' => [
+                 'missing request param: name (in: body, type: ["string", "null"])',
+                 'missing request param: obj/thing (in: body, type: integer)',
+                 'missing request param: str (in: body, type: string)'
+               ],
                'put /b/{}' => ['new required request param: extra'],
-               'post /c/' => ['new required request param: existing/b'] },
+               'post /c/' => ['new required request param: existing/b']
+             },
              response_attributes: {
                'post /a/' => ['missing attribute from 200 response: description (in: body, type: string)'],
                'get /a/{}' => ['missing attribute from 200 response: description (in: body, type: string)'],
@@ -38,7 +40,8 @@ describe Swagger::Diff::Diff do
                                  'missing attribute from 200 response: objs[]/thing (in: body, type: integer)'],
                'put /b/{}' => ['missing attribute from 200 response: description (in: body, type: string)'],
                'get /c/' => ['missing attribute from 200 response: []/name (in: body, type: string)',
-                             'missing 201 response'] })
+                             'missing 201 response']
+             })
   end
 
   describe '#incompatibilities_message' do

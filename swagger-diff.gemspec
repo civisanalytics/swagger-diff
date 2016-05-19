@@ -9,11 +9,15 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Jeff Cousens']
   spec.email         = ['opensource@civisanalytics.com']
 
-  spec.summary       = 'Utility for comparing two Swagger specifications.'
-  spec.description   = 'Swagger::Diff is a utility for comparing two different Swagger specifications.
-It is intended to determine whether a newer API specification is backwards-
-compatible with an older API specification. It provides both an RSpec matcher
-and helper functions that can be used directly.'
+  spec.summary       = 'Utility for comparing two OAI (fka Swagger) specifications.'
+  spec.description   = 'Swagger::Diff is a utility for comparing two ' \
+                       'different Open API Initiative (OAI) specifications ' \
+                       '(fka Swagger specifications). ' \
+                       'It is intended to determine whether a newer API ' \
+                       'specification is backwards-compatible with an ' \
+                       'older API specification. ' \
+                       'It provides both an RSpec matcher and helper ' \
+                       'functions that can be used directly.'
   spec.homepage      = 'https://github.com/civisanalytics/swagger-diff'
   spec.license       = 'BSD 3-Clause'
 
@@ -26,10 +30,10 @@ and helper functions that can be used directly.'
 
   spec.add_dependency 'rspec-expectations', '~> 3.3'
   spec.add_development_dependency 'bundler', '~> 1.9'
-  spec.add_development_dependency 'rake', '~> 10.4'
+  spec.add_development_dependency 'rake', '~> 11.1'
   spec.add_development_dependency 'rspec', '~> 3.3'
   spec.add_development_dependency 'pry', '~> 0.10.1'
-  spec.add_development_dependency 'rubocop', '~> 0.38.0'
+  spec.add_development_dependency 'rubocop', '~> 0.40.0'
   spec.add_development_dependency 'vcr', '~> 3.0'
-  spec.add_development_dependency 'webmock', '~> 1.21'
+  spec.add_development_dependency 'webmock', '~> 2.0'
 end

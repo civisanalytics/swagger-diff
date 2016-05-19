@@ -9,7 +9,8 @@
 > You can tell me by the way I walk - Genesis
 
 Swagger::Diff is a utility for comparing two different
-[Swagger](http://swagger.io/) specifications.
+[Open API Initiative (OAI)](https://openapis.org/) specifications (fka
+[Swagger](http://swagger.io/) specifications).
 Its intended use is to determine whether a newer API specification is
 backwards-compatible with an older API specification.
 It provides both an [RSpec](http://rspec.info/) matcher and helper functions
@@ -49,13 +50,13 @@ Or install it yourself as:
 
 Swagger specifications can be any valid Swagger file format, raw or parsed:
 
-- the path to a file containing a Swagger specification.
+- the path to a file containing an OAI specification.
   This may be local (*e.g.*, `/path/to/swagger.json`) or remote (*e.g.*,
   `http://host.domain/swagger.yml`)
-- a Hash containing a parsed Swagger specification (*e.g.*, the output of
+- a Hash containing a parsed OAI specification (*e.g.*, the output of
   `JSON.parse`)
-- a string of JSON containing a Swagger specification
-- a string of YAML containing a Swagger specification
+- a string of JSON containing an OAI specification
+- a string of YAML containing an OAI specification
 
 ### RSpec
 
