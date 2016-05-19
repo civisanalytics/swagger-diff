@@ -107,13 +107,17 @@ module Swagger
         @new_specification.endpoints - @old_specification.endpoints
       end
 
-      def incompatible_request_params
+      def change_hash(enumerator)
         ret = {}
-        incompatible_request_params_enumerator.each do |key, val|
+        enumerator.each do |key, val|
           ret[key] ||= []
           ret[key] << val
         end
         ret
+      end
+
+      def incompatible_request_params
+        change_hash(incompatible_request_params_enumerator)
       end
 
       def new_or_changed_request_params
@@ -122,12 +126,7 @@ module Swagger
           @old_specification,
           '%{req} is no longer required',
           'new request param: %{req}')
-        ret = {}
-        enumerator.each do |key, val|
-          ret[key] ||= []
-          ret[key] << val
-        end
-        ret
+        change_hash(enumerator)
       end
 
       def new_child?(req, old)
@@ -162,12 +161,7 @@ module Swagger
       end
 
       def incompatible_response_attributes
-        ret = {}
-        incompatible_response_attributes_enumerator.each do |key, val|
-          ret[key] ||= []
-          ret[key] << val
-        end
-        ret
+        change_hash(incompatible_response_attributes_enumerator)
       end
 
       def new_or_changed_response_attributes
@@ -176,12 +170,7 @@ module Swagger
           @old_specification,
           'new attribute for %{code} response: %{resp}',
           'new %{code} response')
-        ret = {}
-        enumerator.each do |key, val|
-          ret[key] ||= []
-          ret[key] << val
-        end
-        ret
+        change_hash(enumerator)
       end
 
       def changed_response_attributes_enumerator(from, to, attr_msg, code_msg)
