@@ -96,12 +96,15 @@ module Swagger
                  @parsed['parameters']
                elsif ref[0..11] == '#/responses/'
                  @parsed['responses']
-               else
+               elsif ref[0..13] == '#/definitions/'
                  @parsed['definitions']
+               else
+                 warn "Unsupported ref '#{ref}' (expected definitions, parameters, or responses)"
+                 {}
                end
         idx = ref.rindex('/')
         key = ref[idx + 1..-1]
-        schema(defs[key], prefix)
+        schema(defs.fetch(key, {}), prefix)
       end
 
       def all_of!(definitions, prefix, ret)

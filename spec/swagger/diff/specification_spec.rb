@@ -194,6 +194,21 @@ describe Swagger::Diff::Specification do
     end
     let(:spec) { Swagger::Diff::Specification.new(parsed) }
 
+    describe 'unsupported ref' do
+      let(:paths) do
+        { '/a/' =>
+          { 'get' =>
+            { 'responses' =>
+              { '200' =>
+                { 'schema' => { '$ref' => '#/other/200' } } } } } }
+      end
+
+      it 'generates a warning' do
+        expect { spec.response_attributes }
+          .to output("Unsupported ref '#/other/200' (expected definitions, parameters, or responses)\n").to_stderr
+      end
+    end
+
     describe 'definitions' do
       let(:paths) do
         { '/a/' =>
