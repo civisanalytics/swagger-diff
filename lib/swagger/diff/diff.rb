@@ -125,7 +125,8 @@ module Swagger
           @new_specification,
           @old_specification,
           '%{req} is no longer required',
-          'new request param: %{req}')
+          'new request param: %{req}'
+        )
         change_hash(enumerator)
       end
 
@@ -157,7 +158,8 @@ module Swagger
           @old_specification,
           @new_specification,
           'new required request param: %{req}',
-          'missing request param: %{req}')
+          'missing request param: %{req}'
+        )
       end
 
       def incompatible_response_attributes
@@ -169,7 +171,8 @@ module Swagger
           @new_specification,
           @old_specification,
           'new attribute for %{code} response: %{resp}',
-          'new %{code} response')
+          'new %{code} response'
+        )
         change_hash(enumerator)
       end
 
@@ -196,7 +199,8 @@ module Swagger
           @old_specification,
           @new_specification,
           'missing attribute from %{code} response: %{resp}',
-          'missing %{code} response')
+          'missing %{code} response'
+        )
       end
 
       def endpoints_compatible?

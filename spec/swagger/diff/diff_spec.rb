@@ -20,7 +20,8 @@ describe Swagger::Diff::Diff do
         new_endpoints: ['delete /pets/{}', 'get /pets/{}', 'post /pets'],
         new_request_params: {
           'get /pets' => ['new request param: tags (in: query, type: array)',
-                          'new request param: limit (in: query, type: integer)'] },
+                          'new request param: limit (in: query, type: integer)']
+        },
         new_response_attributes: {},
         removed_endpoints: [],
         removed_request_params: {},
@@ -38,7 +39,8 @@ describe Swagger::Diff::Diff do
                             'new request param: obj/str (in: body, type: string)'],
           'put /b/{}' => ['new request param: extra (in: body, type: string)'],
           'post /c/' => ['new request param: new/a (in: body, type: string)',
-                         'new request param: new/b (in: body, type: string)'] },
+                         'new request param: new/b (in: body, type: string)']
+        },
         removed_request_params: {
           'get /a/' => ['missing request param: limit (in: query, type: integer)'],
           'post /a/' => ['new required request param: extra'],
@@ -46,12 +48,14 @@ describe Swagger::Diff::Diff do
                             'missing request param: obj/thing (in: body, type: integer)',
                             'missing request param: str (in: body, type: string)'],
           'put /b/{}' => ['new required request param: extra'],
-          'post /c/' => ['new required request param: existing/b'] },
+          'post /c/' => ['new required request param: existing/b']
+        },
         new_response_attributes: {
           'patch /a/{}' => ['new attribute for 200 response: obj/thing (in: body, type: string)',
                             'new attribute for 200 response: obj/str (in: body, type: string)',
                             'new attribute for 200 response: objs[]/thing (in: body, type: string)',
-                            'new attribute for 200 response: objs[]/str (in: body, type: string)'] },
+                            'new attribute for 200 response: objs[]/str (in: body, type: string)']
+        },
         removed_response_attributes: {
           'post /a/' => ['missing attribute from 200 response: description (in: body, type: string)'],
           'get /a/{}' => ['missing attribute from 200 response: description (in: body, type: string)'],
@@ -59,7 +63,9 @@ describe Swagger::Diff::Diff do
                             'missing attribute from 200 response: objs[]/thing (in: body, type: integer)'],
           'put /b/{}' => ['missing attribute from 200 response: description (in: body, type: string)'],
           'get /c/' => ['missing attribute from 200 response: []/name (in: body, type: string)',
-                        'missing 201 response'] } }
+                        'missing 201 response']
+        }
+      }
     end
 
     it { expect(compat_diff.changes).to eq(compat) }
