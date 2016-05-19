@@ -131,7 +131,7 @@ $ swagger-diff -i <old> <new>
 `swagger-diff` will print a list of any backwards-incompatibilities `new` has
 when compared to `old`.
 
-For backwards-compatibility with previous versions of `swagger-diff`, the `-d`
+For backwards-compatibility with previous versions of `swagger-diff`, the `-i`
 argument is optional:
 
 ```bash
