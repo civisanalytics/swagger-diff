@@ -44,16 +44,16 @@ module Swagger
       end
 
       def params_or_nil(endpoint)
-        endpoint && endpoint.parameters || nil
+        endpoint && endpoint['parameters'] || nil
       end
 
       def parse_swagger(swagger)
         if swagger.is_a? Hash
-          Swagger.build(swagger)
-        elsif File.exist?(swagger)
-          Swagger.load(swagger)
+          swagger
         else
-          swagger = open(swagger).read if swagger[0..7] =~ %r{^https?://}
+          if File.exist?(swagger) || swagger[0..7] =~ %r{^https?://}
+            swagger = open(swagger).read
+          end
           begin
             JSON.parse(swagger)
           rescue JSON::ParserError
@@ -61,19 +61,27 @@ module Swagger
               YAML.load(swagger)
             rescue Psych::SyntaxError
               raise 'Only filenames or raw or parsed strings of JSON or YAML are supported.'
-            else
-              Swagger.build(swagger, format: :yaml)
             end
-          else
-            Swagger.build(swagger, format: :json)
           end
         end
       end
 
       def parsed_to_hash(parsed)
         ret = {}
-        parsed.operations.each do |endpoint|
-          ret["#{endpoint.verb} #{endpoint.path.gsub(/{.*?}/, '{}')}"] = endpoint
+        verbs = Set['get', 'put', 'post', 'delete', 'options', 'head', 'patch']
+        parsed['paths'].each do |path, items|
+          # TODO: this doesn't handle external definitions ($ref).
+          warn 'External definitions are not (yet) supported' if items.key?('$ref')
+          (verbs & items.keys).each do |verb|
+            if items['parameters']
+              if items[verb]['parameters']
+                items[verb]['parameters'].concat(items['parameters'])
+              else
+                items[verb]['parameters'] = items['parameters']
+              end
+            end
+            ret["#{verb} #{path.gsub(/{.*?}/, '{}')}"] = items[verb]
+          end
         end
         ret
       end
@@ -84,9 +92,19 @@ module Swagger
       # parameter definitions (i.e., all parameters, including nested
       # parameters, are included in a single set).
       def refs(ref, prefix = '')
+        defs = if ref[0..12] == '#/parameters/'
+                 @parsed['parameters']
+               elsif ref[0..11] == '#/responses/'
+                 @parsed['responses']
+               elsif ref[0..13] == '#/definitions/'
+                 @parsed['definitions']
+               else
+                 warn "Unsupported ref '#{ref}' (expected definitions, parameters, or responses)"
+                 {}
+               end
         idx = ref.rindex('/')
         key = ref[idx + 1..-1]
-        schema(@parsed.definitions[key], prefix)
+        schema(defs.fetch(key, {}), prefix)
       end
 
       def all_of!(definitions, prefix, ret)
@@ -101,26 +119,35 @@ module Swagger
       end
 
       def array?(definition)
-        definition.type && definition.type == 'array' && definition.items
+        definition['type'] && definition['type'] == 'array' && definition['items']
       end
 
+      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/CyclomaticComplexity
       def schema(definition, prefix = '')
         ret = { required: Set.new, all: Set.new }
-        if definition.allOf
-          all_of!(definition.allOf, prefix, ret)
+        if definition['allOf']
+          all_of!(definition['allOf'], prefix, ret)
         elsif definition['$ref']
           merge_refs!(ret, refs(definition['$ref'], prefix))
-        elsif definition.properties
+        elsif definition['properties']
           merge_refs!(ret,
-                      properties(definition.properties,
-                                 definition.required, prefix))
+                      properties(definition['properties'],
+                                 definition['required'], prefix))
         elsif array?(definition)
-          merge_refs!(ret, schema(definition.items, "#{prefix}[]/"))
-        elsif definition.type == 'object'
+          merge_refs!(ret, schema(definition['items'], "#{prefix}[]/"))
+        elsif definition['type'] == 'object'
           ret[:all].add(hash_property(definition, prefix))
+        elsif definition['in']
+          merge_refs!(ret,
+                      properties_for_param(prefix, definition))
+        elsif definition['schema']
+          merge_refs!(ret, schema(definition['schema']))
         end
         ret
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/AbcSize
 
       def nested(ref, prefix, name, list = false)
         # Check for cycles by testing whether name was already added to
@@ -135,6 +162,15 @@ module Swagger
         end
       end
 
+      def properties_for_param(prefix, definition)
+        required = if definition['required']
+                     [definition['name']]
+                   else
+                     []
+                   end
+        properties_for_ref(prefix, definition['name'], definition, required)
+      end
+
       def properties_for_ref(prefix, name, schema, required, list = false)
         key = "#{prefix}#{name}"
         ret = { required: Set.new, all: Set.new }
@@ -142,7 +178,12 @@ module Swagger
           merge_refs!(ret, nested(schema['$ref'], prefix, name, list))
         else
           ret[:required].add(key) if required && required.include?(name)
-          ret[:all].add("#{key} (in: body, type: #{schema.type}#{'[]' if list})")
+          loc = if schema['in']
+                  schema['in']
+                else
+                  'body'
+                end
+          ret[:all].add("#{key} (in: #{loc}, type: #{schema['type']}#{'[]' if list})")
         end
         ret
       end
@@ -160,9 +201,9 @@ module Swagger
               else
                 "#{prefix}#{name}"
               end
-        type = if definition.additionalProperties &&
-                  definition.additionalProperties.type
-                 definition.additionalProperties.type
+        type = if definition['additionalProperties'] &&
+                  definition['additionalProperties']['type']
+                 definition['additionalProperties']['type']
                else
                  '*'
                end
@@ -172,10 +213,10 @@ module Swagger
       def properties(properties, required, prefix = '')
         ret = { required: Set.new, all: Set.new }
         properties.each do |name, schema|
-          if schema.type == 'array'
-            merge_refs!(ret, properties_for_ref(prefix, name, schema.items, required, true))
-          elsif schema.type == 'object'
-            if schema.allOf
+          if schema['type'] == 'array'
+            merge_refs!(ret, properties_for_ref(prefix, name, schema['items'], required, true))
+          elsif schema['type'] == 'object'
+            if schema['allOf']
               # TODO: handle nested allOfs.
             else
               ret[:all].add(hash_property(schema, prefix, name))
@@ -191,11 +232,13 @@ module Swagger
         ret = { required: Set.new, all: Set.new }
         return ret if params.nil?
         params.each do |param|
-          if param.in == 'body'
-            merge_refs!(ret, schema(param.schema))
+          if param['in'] == 'body'
+            merge_refs!(ret, schema(param['schema']))
+          elsif param['$ref']
+            merge_refs!(ret, schema(param))
           else
-            ret[:required].add(param.name) if param.required
-            ret[:all].add("#{param.name} (in: #{param.in}, type: #{param.type})")
+            ret[:required].add(param['name']) if param['required']
+            ret[:all].add("#{param['name']} (in: #{param['in']}, type: #{param['type']})")
           end
         end
         ret
@@ -203,9 +246,11 @@ module Swagger
 
       def response_attributes_inner(endpoint)
         ret = {}
-        endpoint.responses.each do |code, response|
-          ret[code] = if response.schema
-                        schema(response.schema)[:all]
+        endpoint['responses'].each do |code, response|
+          ret[code] = if response['schema']
+                        schema(response['schema'])[:all]
+                      elsif response['$ref']
+                        schema(response)[:all]
                       else
                         Set.new
                       end
