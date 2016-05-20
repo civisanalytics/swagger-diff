@@ -259,13 +259,22 @@ module Swagger
         ret
       end
 
-      def validate_swagger
-        schema_file = File.join(
+      def schema_for(type)
+        File.join(
           File.expand_path(File.join('..', '..', '..', '..'), __FILE__),
-          'schema', 'schema.json'
+          'schema', type, 'schema.json'
         )
-        schema = open(schema_file).read
-        unless JSON::Validator.validate(schema, JSON.dump(@parsed))
+      end
+
+      def validate_swagger
+        json_schema = File.open(schema_for('json')) do |json_schema_file|
+          JSON::Schema.new(
+            JSON.parse(json_schema_file.read),
+            Addressable::URI.parse('http://json-schema.org/draft-04/schema#')
+          )
+        end
+        JSON::Validator.add_schema(json_schema)
+        unless JSON::Validator.validate(schema_for('oai'), JSON.dump(@parsed))
           spec = if @spec.length > 80
                    "#{@spec[0..76]}..."
                  else

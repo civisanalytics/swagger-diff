@@ -16,7 +16,4 @@ end
 VCR.configure do |config|
   config.cassette_library_dir = 'spec/fixtures/cassettes'
   config.hook_into :webmock
-  config.around_http_request do |request|
-    VCR.use_cassette('global', &request)
-  end
 end
