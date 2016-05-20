@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2016-05-20
+
 ### Added
 
 * Added a [Code of Conduct](CODE_OF_CONDUCT.md)
@@ -76,7 +78,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Initial Release
 
-[Unreleased]: https://github.com/civisanalytics/swagger-diff/compare/v1.0.5...HEAD
+[Unreleased]: https://github.com/civisanalytics/swagger-diff/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/civisanalytics/swagger-diff/compare/v1.0.5...v1.1.0
 [1.0.5]: https://github.com/civisanalytics/swagger-diff/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/civisanalytics/swagger-diff/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/civisanalytics/swagger-diff/compare/v1.0.2...v1.0.3
