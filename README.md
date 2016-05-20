@@ -159,18 +159,18 @@ See [CONTRIBUTING](CONTRIBUTING.md).
 
 ## License
 
-Swagger::Diff is released under the [BSD 3-Clause License](LICENSE.txt).
+Swagger::Diff is released under the [BSD 3-Clause License](LICENSE.md).
 
 ## OpenAPI (fka Swagger) Specification License
 
 Swagger::Diff includes an
 [unmodified copy of the OpenAPI Specification](schema/oai/schema.json).
 The OpenAPI Specification is licensed under the
-[Apache License, Version 2.0](schema/oai/LICENSE).
+[Apache License, Version 2.0](schema/oai/LICENSE.md).
 
 ## JSON Schema Specification License
 
 Swagger::Diff includes an
 [unmodified copy of the JSON Schema Specification, draft v4](schema/json/schema.json).
 The JSON Schema Specification is licensed under the
-[Simplified BSD License](schema/json/LICENSE).
+[Simplified BSD License](schema/json/LICENSE.md).
