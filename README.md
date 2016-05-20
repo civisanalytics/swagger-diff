@@ -51,11 +51,11 @@ Or install it yourself as:
 
 ## Usage
 
-Swagger specifications can be any valid Swagger file format, raw or parsed:
+OAI specifications can be any valid OAI file format, raw or parsed:
 
 - the path to a file containing an OAI specification.
-  This may be local (*e.g.*, `/path/to/swagger.json`) or remote (*e.g.*,
-  `http://host.domain/swagger.yml`)
+  This may be local (*e.g.*, `/path/to/specification.json`) or remote (*e.g.*,
+  `http://host.domain/specification.yml`)
 - a Hash containing a parsed OAI specification (*e.g.*, the output of
   `JSON.parse`)
 - a string of JSON containing an OAI specification
