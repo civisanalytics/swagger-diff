@@ -4,6 +4,7 @@ module Swagger
       def initialize(spec)
         @spec = spec
         @parsed = parse_swagger(spec)
+        validate_swagger
         @endpoint_hash = parsed_to_hash(@parsed)
       end
 
@@ -256,6 +257,32 @@ module Swagger
                       end
         end
         ret
+      end
+
+      def schema_for(type)
+        File.join(
+          File.expand_path(File.join('..', '..', '..', '..'), __FILE__),
+          'schema', type, 'schema.json'
+        )
+      end
+
+      def validate_swagger
+        json_schema = File.open(schema_for('json')) do |json_schema_file|
+          JSON::Schema.new(
+            JSON.parse(json_schema_file.read),
+            Addressable::URI.parse('http://json-schema.org/draft-04/schema#')
+          )
+        end
+        JSON::Validator.add_schema(json_schema)
+        errors = JSON::Validator.fully_validate(schema_for('oai'), JSON.dump(@parsed))
+        unless errors.empty?
+          spec = if @spec.to_s.length > 80
+                   "#{@spec.to_s[0..74]} ..."
+                 else
+                   @spec
+                 end
+          warn "#{spec} is not a valid Swagger specification:\n\n#{errors.join("\n")}"
+        end
       end
     end
   end

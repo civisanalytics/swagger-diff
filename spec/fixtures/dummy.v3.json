@@ -17,6 +17,7 @@
         ],
         "responses": {
           "200": {
+            "description": "200 response",
             "schema": {
               "type": "array",
               "items": { "$ref": "#/definitions/A1" }
@@ -34,6 +35,7 @@
         ],
         "responses": {
           "200": {
+            "description": "200 response",
             "schema": { "$ref": "#/definitions/A3" }
           }
         }
@@ -51,6 +53,7 @@
         ],
         "responses": {
           "200": {
+            "description": "200 response",
             "schema": { "$ref": "#/definitions/A3" }
           }
         }
@@ -71,6 +74,7 @@
         ],
         "responses": {
           "200": {
+            "description": "200 response",
             "schema": { "$ref": "#/definitions/A6" }
           }
         }
@@ -91,6 +95,7 @@
         ],
         "responses": {
           "200": {
+            "description": "200 response",
             "schema": { "$ref": "#/definitions/A3" }
           }
         }
@@ -107,6 +112,7 @@
         ],
         "responses": {
           "200": {
+            "description": "200 response",
             "schema": { "$ref": "#/definitions/A1" }
           }
         }
@@ -129,6 +135,7 @@
         ],
         "responses": {
           "200": {
+            "description": "200 response",
             "schema": { "$ref": "#/definitions/B2" }
           }
         }
