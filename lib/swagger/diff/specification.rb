@@ -274,13 +274,14 @@ module Swagger
           )
         end
         JSON::Validator.add_schema(json_schema)
-        unless JSON::Validator.validate(schema_for('oai'), JSON.dump(@parsed))
-          spec = if @spec.length > 80
-                   "#{@spec[0..76]}..."
+        errors = JSON::Validator.fully_validate(schema_for('oai'), JSON.dump(@parsed))
+        unless errors.empty?
+          spec = if @spec.to_s.length > 80
+                   "#{@spec.to_s[0..74]} ..."
                  else
                    @spec
                  end
-          warn "#{spec} is not a valid Swagger specification"
+          warn "#{spec} is not a valid Swagger specification:\n\n#{errors.join("\n")}"
         end
       end
     end
