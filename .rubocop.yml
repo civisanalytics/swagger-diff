@@ -1,5 +1,16 @@
+AllCops:
+  TargetRubyVersion: 2.4
+
+Layout/IndentHeredoc:
+  Enabled: false
+
 Metrics/AbcSize:
   Max: 30
+
+Metrics/BlockLength:
+  Exclude:
+    - 'swagger-diff.gemspec'
+    - 'spec/**/*.rb'
 
 Metrics/ClassLength:
   Max: 240
@@ -13,8 +24,15 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 10
 
+# YAML.safe_load is not present in Ruby 2.0.
+Security/YAMLLoad:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
 Style/FileName:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
   Enabled: false
