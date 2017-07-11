@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+* Added 2.4 to the Travis matrix
+
+### Changed
+
+* Bumped the Ruby version for development to 2.4.1
+* Bumped the RuboCop version for development to 0.49
+* Bumped the WebMock version for development to 3
+* Bumped the Travis matrix to 2.1.10, 2.2.7, and 2.3.4
+* RuboCop fixes
+
 ## [1.1.0] - 2016-05-20
 
 ### Added
