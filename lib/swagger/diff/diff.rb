@@ -124,8 +124,8 @@ module Swagger
         enumerator = changed_request_params_enumerator(
           @new_specification,
           @old_specification,
-          '%{req} is no longer required',
-          'new request param: %{req}'
+          '%<req>s is no longer required',
+          'new request param: %<req>s'
         )
         change_hash(enumerator)
       end
@@ -134,7 +134,7 @@ module Swagger
         idx = req.rindex('/')
         return false unless idx
         key = req[0..idx]
-        !old.any? { |param| param.start_with?(key) }
+        old.none? { |param| param.start_with?(key) }
       end
 
       def changed_request_params_enumerator(from, to, req_msg, missing_msg)
@@ -144,10 +144,10 @@ module Swagger
             next if new_params.nil?
             (new_params[:required] - old_params[:required]).each do |req|
               next if new_child?(req, old_params[:all])
-              yielder << [key, req_msg % { req: req }]
+              yielder << [key, format(req_msg, req: req)]
             end
             (old_params[:all] - new_params[:all]).each do |req|
-              yielder << [key, missing_msg % { req: req }]
+              yielder << [key, format(missing_msg, req: req)]
             end
           end
         end.lazy
@@ -157,8 +157,8 @@ module Swagger
         changed_request_params_enumerator(
           @old_specification,
           @new_specification,
-          'new required request param: %{req}',
-          'missing request param: %{req}'
+          'new required request param: %<req>s',
+          'missing request param: %<req>s'
         )
       end
 
@@ -170,8 +170,8 @@ module Swagger
         enumerator = changed_response_attributes_enumerator(
           @new_specification,
           @old_specification,
-          'new attribute for %{code} response: %{resp}',
-          'new %{code} response'
+          'new attribute for %{code} response: %<resp>s',
+          'new %<code>s response'
         )
         change_hash(enumerator)
       end
@@ -184,10 +184,10 @@ module Swagger
             old_attributes.keys.each do |code|
               if new_attributes.key?(code)
                 (old_attributes[code] - new_attributes[code]).each do |resp|
-                  yielder << [key, attr_msg % { code: code, resp: resp }]
+                  yielder << [key, format(attr_msg, code: code, resp: resp)]
                 end
               else
-                yielder << [key, code_msg % { code: code }]
+                yielder << [key, format(code_msg, code: code)]
               end
             end
           end
@@ -198,8 +198,8 @@ module Swagger
         changed_response_attributes_enumerator(
           @old_specification,
           @new_specification,
-          'missing attribute from %{code} response: %{resp}',
-          'missing %{code} response'
+          'missing attribute from %<code>s response: %<resp>s',
+          'missing %<code>s response'
         )
       end
 

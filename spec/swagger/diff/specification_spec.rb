@@ -16,7 +16,7 @@ describe Swagger::Diff::Specification do
       expect(endpoint_hash.keys)
         .to eq(['get /pets', 'post /pets', 'get /pets/{}', 'delete /pets/{}'])
       expect(endpoint_hash['get /pets'].keys)
-        .to eq(%w(description operationId externalDocs produces parameters responses))
+        .to eq(%w[description operationId externalDocs produces parameters responses])
       expect(endpoint_hash['get /pets']).not_to eq(endpoint_hash['post /pets'])
     end
   end
@@ -68,7 +68,7 @@ describe Swagger::Diff::Specification do
       expect(spec.request_params)
         .to eq('get /a/' => { required: Set.new,
                               all: Set.new(['limit (in: query, type: integer)']) },
-               'post /a/' => { required: Set.new(%w(name description)),
+               'post /a/' => { required: Set.new(%w[name description]),
                                all: Set.new(['name (in: body, type: string)',
                                              'description (in: body, type: string)',
                                              'untyped (in: body, type: Hash[string, *])']) },
@@ -97,14 +97,14 @@ describe Swagger::Diff::Specification do
                                'obj/selfs[]/selfs[] (in: body, type: reference)',
                                'str (in: body, type: string)'])
                },
-               'put /a/{}' => { required: Set.new(%w(id name description)),
+               'put /a/{}' => { required: Set.new(%w[id name description]),
                                 all: Set.new(['id (in: path, type: integer)',
                                               'name (in: body, type: string)',
                                               'description (in: body, type: string)',
                                               'untyped (in: body, type: Hash[string, *])']) },
                'post /b/' => { required: Set.new,
                                all: Set.new(['name (in: body, type: string)']) },
-               'put /b/{}' => { required: Set.new(%w(id name description req)),
+               'put /b/{}' => { required: Set.new(%w[id name description req]),
                                 all: Set.new(['id (in: path, type: integer)',
                                               'name (in: body, type: string)',
                                               'description (in: body, type: string)',
@@ -324,7 +324,7 @@ The property '#/paths//a//get' did not contain a required property of 'responses
       it 'dereferences parameters' do
         expect(spec.request_params)
           .to eq('get /a/{}/b/{}' =>
-                 { required: Set.new(%w(id guid)),
+                 { required: Set.new(%w[id guid]),
                    all: Set.new(['id (in: path, type: integer)',
                                  'guid (in: path, type: string)',
                                  'format (in: query, type: string)']) })
@@ -430,7 +430,7 @@ The property '#/paths//a//get' did not contain a required property of 'responses
       end
       let(:responses) do
         { '200' => { 'description' => 'A generic response',
-                     'schema' => { 'required' => %w(id name),
+                     'schema' => { 'required' => %w[id name],
                                    'properties' =>
                                    { 'id' => { 'type' => 'integer' },
                                      'name' => { 'type' => 'string' } } } } }
