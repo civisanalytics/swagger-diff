@@ -170,7 +170,7 @@ module Swagger
         enumerator = changed_response_attributes_enumerator(
           @new_specification,
           @old_specification,
-          'new attribute for %{code} response: %<resp>s',
+          'new attribute for %<code>s response: %<resp>s',
           'new %<code>s response'
         )
         change_hash(enumerator)
