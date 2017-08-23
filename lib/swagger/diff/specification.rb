@@ -211,6 +211,7 @@ module Swagger
         "#{key} (in: body, type: Hash[string, #{type}])"
       end
 
+      # rubocop:disable Metrics/CyclomaticComplexity
       def properties(properties, required, prefix = '')
         ret = { required: Set.new, all: Set.new }
         properties.each do |name, schema|
@@ -219,6 +220,8 @@ module Swagger
           elsif schema['type'] == 'object'
             if schema['allOf']
               # TODO: handle nested allOfs.
+            elsif schema['type'] && schema['type'] == 'object' && schema['properties']
+              merge_refs!(ret, properties(schema['properties'], required, "#{prefix}#{name}/"))
             else
               ret[:all].add(hash_property(schema, prefix, name))
             end
@@ -228,6 +231,7 @@ module Swagger
         end
         ret
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       def request_params_inner(params)
         ret = { required: Set.new, all: Set.new }
