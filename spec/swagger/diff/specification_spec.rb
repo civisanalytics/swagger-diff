@@ -444,6 +444,34 @@ The property '#/paths//a//get' did not contain a required property of 'responses
       end
     end
 
+    describe 'nested inline response objects' do
+      let(:paths) do
+        { '/a/' =>
+          { 'get' =>
+            { 'responses' =>
+              { '200' =>
+                { '$ref' => '#/responses/200' } } } } }
+      end
+      let(:responses) do
+        { '200' => { 'description' => 'A generic response',
+                     'schema' =>
+                     { 'type' => 'object',
+                       'properties' =>
+                       { 'nested' =>
+                         { 'type' => 'object',
+                           'properties' =>
+                           { 'id' => { 'type' => 'integer' },
+                             'name' => { 'type' => 'string' } } } } } } }
+      end
+
+      it 'recurses' do
+        expect(spec.response_attributes)
+          .to eq('get /a/' =>
+                 { '200' => Set.new(['nested/id (in: body, type: integer)',
+                                     'nested/name (in: body, type: string)']) })
+      end
+    end
+
     describe 'external path item' do
       let(:paths) do
         { '/a/' => { '$ref' => '...' } }

@@ -13,7 +13,7 @@ Metrics/BlockLength:
     - 'spec/**/*.rb'
 
 Metrics/ClassLength:
-  Max: 240
+  Max: 250
 
 Metrics/LineLength:
   Max: 120

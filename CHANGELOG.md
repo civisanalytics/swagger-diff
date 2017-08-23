@@ -17,6 +17,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Bumped the Travis matrix to 2.1.10, 2.2.7, and 2.3.4
 * RuboCop fixes
 
+### Fixed
+
+* [#51](https://github.com/civisanalytics/swagger-diff/pull/51)
+  parse nested inline objects
+
 ## [1.1.0] - 2016-05-20
 
 ### Added
