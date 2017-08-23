@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.1] - 2017-08-23
+
 ### Added
 
 * Added 2.4 to the Travis matrix
@@ -95,7 +97,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Initial Release
 
-[Unreleased]: https://github.com/civisanalytics/swagger-diff/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/civisanalytics/swagger-diff/compare/v1.1.1...HEAD
+[1.1.0]: https://github.com/civisanalytics/swagger-diff/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/civisanalytics/swagger-diff/compare/v1.0.5...v1.1.0
 [1.0.5]: https://github.com/civisanalytics/swagger-diff/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/civisanalytics/swagger-diff/compare/v1.0.3...v1.0.4
