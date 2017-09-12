@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+* [#56](https://github.com/civisanalytics/swagger-diff/pull/56)
+  recursively parse non-ref response schemas (`properties` and `items`)
+
 ## [1.1.1] - 2017-08-23
 
 ### Added

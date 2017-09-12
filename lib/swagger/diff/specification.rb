@@ -172,19 +172,28 @@ module Swagger
         properties_for_ref(prefix, definition['name'], definition, required)
       end
 
-      def properties_for_ref(prefix, name, schema, required, list = false)
+      # rubocop:disable Metrics/ParameterLists
+      def add_property(ret, prefix, name, schema, required, list)
         key = "#{prefix}#{name}"
+        ret[:required].add(key) if required && required.include?(name)
+        loc = if schema['in']
+                schema['in']
+              else
+                'body'
+              end
+        ret[:all].add("#{key} (in: #{loc}, type: #{schema['type']}#{'[]' if list})")
+      end
+      # rubocop:enable Metrics/ParameterLists
+
+      def properties_for_ref(prefix, name, schema, required, list = false)
         ret = { required: Set.new, all: Set.new }
         if schema.key?('$ref')
           merge_refs!(ret, nested(schema['$ref'], prefix, name, list))
+        elsif schema.key?('properties')
+          prefix = "#{name}#{'[]' if list}/"
+          merge_refs!(ret, properties(schema['properties'], schema['required'], prefix))
         else
-          ret[:required].add(key) if required && required.include?(name)
-          loc = if schema['in']
-                  schema['in']
-                else
-                  'body'
-                end
-          ret[:all].add("#{key} (in: #{loc}, type: #{schema['type']}#{'[]' if list})")
+          add_property(ret, prefix, name, schema, required, list)
         end
         ret
       end
@@ -211,16 +220,15 @@ module Swagger
         "#{key} (in: body, type: Hash[string, #{type}])"
       end
 
-      # rubocop:disable Metrics/CyclomaticComplexity
       def properties(properties, required, prefix = '')
         ret = { required: Set.new, all: Set.new }
         properties.each do |name, schema|
           if schema['type'] == 'array'
             merge_refs!(ret, properties_for_ref(prefix, name, schema['items'], required, true))
-          elsif schema['type'] == 'object'
+          elsif schema['type'] == 'object' || schema.key?('properties')
             if schema['allOf']
               # TODO: handle nested allOfs.
-            elsif schema['type'] && schema['type'] == 'object' && schema['properties']
+            elsif schema['properties']
               merge_refs!(ret, properties(schema['properties'], required, "#{prefix}#{name}/"))
             else
               ret[:all].add(hash_property(schema, prefix, name))
@@ -231,7 +239,6 @@ module Swagger
         end
         ret
       end
-      # rubocop:enable Metrics/CyclomaticComplexity
 
       def request_params_inner(params)
         ret = { required: Set.new, all: Set.new }

@@ -420,6 +420,37 @@ The property '#/paths//a//get' did not contain a required property of 'responses
       end
     end
 
+    describe 'response properties' do
+      let(:paths) do
+        { '/a/' =>
+          { 'get' =>
+            { 'responses' =>
+              { '200' =>
+                { 'description' => 'A generic response',
+                  'schema' =>
+                  { 'properties' =>
+                    { 'data' =>
+                      { 'type' => 'array',
+                        'items' =>
+                        { 'properties' =>
+                          { 'obj' =>
+                            { 'properties' =>
+                              { 'id' => { 'type' => 'integer' },
+                                'name' => { 'type' => 'string' },
+                                'strings' =>
+                                { 'type' => 'array',
+                                  'items' => { 'type' => 'string' } } } } } } } } } } } } } }
+      end
+
+      it 'parses properties recursively' do
+        expect(spec.response_attributes)
+          .to eq('get /a/' =>
+                 { '200' => Set.new(['data[]/obj/id (in: body, type: integer)',
+                                     'data[]/obj/name (in: body, type: string)',
+                                     'data[]/obj/strings (in: body, type: string[])']) })
+      end
+    end
+
     describe 'response refs' do
       let(:paths) do
         { '/a/' =>
