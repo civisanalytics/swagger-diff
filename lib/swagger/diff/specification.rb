@@ -187,9 +187,9 @@ module Swagger
 
       def properties_for_ref(prefix, name, schema, required, list = false)
         ret = { required: Set.new, all: Set.new }
-        if schema.key?('$ref')
+        if schema['$ref']
           merge_refs!(ret, nested(schema['$ref'], prefix, name, list))
-        elsif schema.key?('properties')
+        elsif schema['properties']
           prefix = "#{name}#{'[]' if list}/"
           merge_refs!(ret, properties(schema['properties'], schema['required'], prefix))
         else
@@ -225,7 +225,7 @@ module Swagger
         properties.each do |name, schema|
           if schema['type'] == 'array'
             merge_refs!(ret, properties_for_ref(prefix, name, schema['items'], required, true))
-          elsif schema['type'] == 'object' || schema.key?('properties')
+          elsif schema['type'] == 'object' || schema['properties']
             if schema['allOf']
               # TODO: handle nested allOfs.
             elsif schema['properties']
