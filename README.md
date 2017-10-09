@@ -31,7 +31,7 @@ Specifications are considered backwards compatible if:
 It can also be used to enumerate all changes between two specifications (*i.e.*,
 to generate a changelog).
 
-Read more on the [Civis Analytics blog](https://civisanalytics.com/blog/engineering/2015/10/02/using-swagger-to-detect-breaking-api-changes/).
+Read more on the [Civis Analytics blog](https://www.civisanalytics.com/blog/if-it-loses-its-quack-does-it-still-talk-like-a-duck-using-swagger-to-detect-breaking-api-changes/).
 
 ## Installation
 
