@@ -220,11 +220,11 @@ describe Swagger::Diff::Specification do
 
       it 'generates a warning' do
         expect { spec }
-          .to output(<<-EOW
+          .to output(<<-WARNING
 {"swagger"=>"2.0", "info"=>{"title"=>"Swagger Fixture", "version"=>"1.0"},  ... is not a valid Swagger specification:
 
 The property '#/paths//a//get' did not contain a required property of 'responses' in schema http://swagger.io/v2/schema.json#
-                     EOW
+                     WARNING
                     ).to_stderr
       end
     end
