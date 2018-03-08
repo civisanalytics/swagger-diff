@@ -13,7 +13,7 @@ describe RSpec::Matchers do
     end
 
     it 'should raise Exception with details when incompatible' do
-      msg = <<-EOM
+      msg = <<-MESSAGE
 expected Swagger to be compatible with 'spec/fixtures/dummy.v1.json', found:
 - missing endpoints
   - post /b/
@@ -44,7 +44,7 @@ expected Swagger to be compatible with 'spec/fixtures/dummy.v1.json', found:
     - missing attribute from 200 response: description (in: body, type: string)
   - put /b/{}
     - missing attribute from 200 response: description (in: body, type: string)
-      EOM
+      MESSAGE
       expect do
         expect('spec/fixtures/dummy.v2.json')
           .to be_compatible_with('spec/fixtures/dummy.v1.json')
