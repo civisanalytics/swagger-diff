@@ -20,6 +20,12 @@ OptionParser.new do |opts|
     options[:incompatibilities] = i
   end
 
+  opts.on('-v', '--csv',
+    'Outputs to CSV.',
+    'If not specificed outputs as YAML') do |csv|
+    options[:csv] = csv
+  end
+
   opts.on_tail('-h', '--help', 'This message') do
     puts opts
     exit
@@ -35,12 +41,20 @@ end.parse!
 
 if ARGV.length == 2
   diff = Swagger::Diff::Diff.new(ARGV[0], ARGV[1])
-
+  
   if options[:changes]
-    puts diff.changes_message
+    if options[:csv]
+      puts diff.changes_message("csv")    
+    else
+      puts diff.changes_message("yaml")
+    end
   else
     unless diff.compatible?
-      puts diff.incompatibilities_message
+      if options[:csv]
+        puts diff.incompatibilities_message("csv")
+      else
+        puts diff.incompatibilities_message("yaml")
+      end
       exit 1
     end
   end

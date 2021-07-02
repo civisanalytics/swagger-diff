@@ -8,6 +8,7 @@ module Swagger
 
       def changes
         @changes ||= {
+          deprecated_endpoints: newly_deprecated_endpoints.to_a.sort,
           new_endpoints: new_endpoints.to_a.sort,
           removed_endpoints: missing_endpoints.to_a.sort,
           new_request_params: new_or_changed_request_params,
@@ -17,7 +18,11 @@ module Swagger
         }
       end
 
-      def changes_message
+      def changes_message(csvOrYaml)
+        @outputFormat = csvOrYaml
+        if @outputFormat == "csv"
+          puts 'Endpoint,OperationId,Change,Category,Sub Category,Attribute'
+        end
         changed_endpoints_message + changed_params_message + changed_attrs_message
       end
 
@@ -28,14 +33,17 @@ module Swagger
       def incompatibilities
         @incompatibilities ||= {
           endpoints: missing_endpoints.to_a.sort,
+          deprecated_endpoints: newly_deprecated_endpoints.to_a.sort,
           request_params: incompatible_request_params,
           response_attributes: incompatible_response_attributes
         }
       end
 
-      def incompatibilities_message
+      def incompatibilities_message(csvOrYaml)
+        @outputFormat = csvOrYaml
         msg = ''
         msg += endpoints_message('missing', incompatibilities[:endpoints])
+        msg += endpoints_message('deprecated', incompatibilities[:deprecated_endpoints])
         msg += params_message('incompatible', incompatibilities[:request_params])
         msg += attributes_message('incompatible', incompatibilities[:response_attributes])
         msg
@@ -47,6 +55,7 @@ module Swagger
         msg = ''
         msg += endpoints_message('new', changes[:new_endpoints])
         msg += endpoints_message('removed', changes[:removed_endpoints])
+        msg += endpoints_message('deprecated', changes[:deprecated_endpoints])
         msg
       end
 
@@ -68,9 +77,17 @@ module Swagger
         if endpoints.empty?
           ''
         else
-          msg = "- #{type} endpoints\n"
-          endpoints.each do |endpoint|
-            msg += "  - #{endpoint}\n"
+          if @outputFormat == "csv"
+            msg = ''
+            endpoints.each do |endpoint|
+              urlSplit = endpoint.split(" operationId:")
+              msg += "#{urlSplit[0]},#{urlSplit[1]},#{type},endpoints\n"
+            end
+          else
+            msg = "- #{type} endpoints\n"
+            endpoints.each do |endpoint|
+              msg += "  - #{endpoint}\n"
+            end
           end
           msg
         end
@@ -80,11 +97,21 @@ module Swagger
         if collection.nil? || collection.empty?
           ''
         else
-          msg = "- #{nature} #{type}\n"
-          collection.sort.each do |endpoint, attributes|
-            msg += "  - #{endpoint}\n"
-            attributes.each do |attribute|
-              msg += "    - #{attribute}\n"
+          if @outputFormat == "csv"
+            msg = ''
+            collection.sort.each do |endpoint, attributes|
+              urlSplit = endpoint.split(" operationId:")
+              attributes.each do |attribute|
+                msg += "#{urlSplit[0]},#{urlSplit[1]},#{nature},#{type},#{attribute}\n"
+              end
+            end
+          else
+            msg = "- #{nature} #{type}\n"
+            collection.sort.each do |endpoint, attributes|
+              msg += "  - #{endpoint}\n"
+              attributes.each do |attribute|
+                msg += "    - #{attribute}\n"
+              end
             end
           end
           msg
@@ -107,6 +134,10 @@ module Swagger
         @new_specification.endpoints - @old_specification.endpoints
       end
 
+      def newly_deprecated_endpoints
+        @new_specification.deprecated_endpoints - @old_specification.deprecated_endpoints
+      end
+
       def change_hash(enumerator)
         ret = {}
         enumerator.each do |key, val|
@@ -121,12 +152,21 @@ module Swagger
       end
 
       def new_or_changed_request_params
-        enumerator = changed_request_params_enumerator(
-          @new_specification,
-          @old_specification,
-          '%<req>s is no longer required',
-          'new request param: %<req>s'
-        )
+        if @outputFormat == "csv"
+          enumerator = changed_request_params_enumerator(
+            @new_specification,
+            @old_specification,
+            '%<req>s is no longer required',
+            'new request param,%<req>s'
+          )  
+        else
+          enumerator = changed_request_params_enumerator(
+            @new_specification,
+            @old_specification,
+            '%<req>s is no longer required',
+            'new request param: %<req>s'
+          )  
+        end
         change_hash(enumerator)
       end
 
@@ -154,12 +194,21 @@ module Swagger
       end
 
       def incompatible_request_params_enumerator
-        changed_request_params_enumerator(
-          @old_specification,
-          @new_specification,
-          'new required request param: %<req>s',
-          'missing request param: %<req>s'
-        )
+        if @outputFormat == "csv"
+          changed_request_params_enumerator(
+            @old_specification,
+            @new_specification,
+            'new required request param,%<req>s',
+            'missing request param,%<req>s'
+          )
+        else
+          changed_request_params_enumerator(
+            @old_specification,
+            @new_specification,
+            'new required request param: %<req>s',
+            'missing request param: %<req>s'
+          )
+        end
       end
 
       def incompatible_response_attributes
@@ -167,12 +216,21 @@ module Swagger
       end
 
       def new_or_changed_response_attributes
-        enumerator = changed_response_attributes_enumerator(
-          @new_specification,
-          @old_specification,
-          'new attribute for %<code>s response: %<resp>s',
-          'new %<code>s response'
-        )
+        if @outputFormat == "csv"
+          enumerator = changed_response_attributes_enumerator(
+            @new_specification,
+            @old_specification,
+            'new attribute for %<code>s response,%<resp>s',
+            'new %<code>s response'
+          )  
+        else
+          enumerator = changed_response_attributes_enumerator(
+            @new_specification,
+            @old_specification,
+            'new attribute for %<code>s response: %<resp>s',
+            'new %<code>s response'
+          )
+        end
         change_hash(enumerator)
       end
 
@@ -195,12 +253,21 @@ module Swagger
       end
 
       def incompatible_response_attributes_enumerator
-        changed_response_attributes_enumerator(
-          @old_specification,
-          @new_specification,
-          'missing attribute from %<code>s response: %<resp>s',
-          'missing %<code>s response'
-        )
+        if @outputFormat == "csv"
+          changed_response_attributes_enumerator(
+            @old_specification,
+            @new_specification,
+            'missing attribute from %<code>s response,%<resp>s',
+            'missing %<code>s response'
+          )
+        else
+          changed_response_attributes_enumerator(
+            @old_specification,
+            @new_specification,
+            'missing attribute from %<code>s response: %<resp>s',
+            'missing %<code>s response'
+          )
+        end
       end
 
       def endpoints_compatible?

@@ -6,10 +6,15 @@ module Swagger
         @parsed = parse_swagger(spec)
         validate_swagger
         @endpoint_hash = parsed_to_hash(@parsed)
+        @deprecated_endpoints_hash = parsed_to_deprecated_hash(@parsed)
       end
 
       def endpoints
         @endpoint_hash.keys.to_set
+      end
+
+      def deprecated_endpoints
+        @deprecated_endpoints_hash.keys.to_set
       end
 
       def request_params
@@ -81,7 +86,22 @@ module Swagger
                 items[verb]['parameters'] = items['parameters']
               end
             end
-            ret["#{verb} #{path.gsub(/{.*?}/, '{}')}"] = items[verb]
+            ret["#{verb} #{parsed['basePath']}#{path.gsub(/{.*?}/, '{}')} operationId:#{items[verb]['operationId']}"] = items[verb]
+          end
+        end
+        ret
+      end
+
+      def parsed_to_deprecated_hash(parsed)
+        ret = {}
+        verbs = Set['get', 'put', 'post', 'delete', 'options', 'head', 'patch']
+        parsed['paths'].each do |path, items|
+          # TODO: this doesn't handle external definitions ($ref).
+          warn 'External definitions are not (yet) supported' if items.key?('$ref')
+          (verbs & items.keys).each do |verb|
+            if items[verb]['deprecated']
+              ret["#{verb} #{parsed['basePath']}#{path.gsub(/{.*?}/, '{}')} operationId:#{items[verb]['operationId']}"] = items[verb]
+            end
           end
         end
         ret
@@ -157,7 +177,7 @@ module Swagger
         if prefix == "#{name}/" || prefix =~ %r{/#{name}(\[\])?/}
           # Anonymizing the reference in case the name changed (e.g.,
           # generated Swagger).
-          { all: ["#{key} (in: body, type: reference)"] }
+          { all: ["#{key} (in body type reference)"] }
         else
           refs(ref, "#{key}/")
         end
@@ -181,7 +201,7 @@ module Swagger
               else
                 'body'
               end
-        ret[:all].add("#{key} (in: #{loc}, type: #{schema['type']}#{'[]' if list})")
+        ret[:all].add("#{key} (in #{loc} type #{schema['type']}#{'[]' if list})")
       end
       # rubocop:enable Metrics/ParameterLists
 
@@ -217,7 +237,7 @@ module Swagger
                else
                  '*'
                end
-        "#{key} (in: body, type: Hash[string, #{type}])"
+        "#{key} (in body type Hash[string, #{type}])"
       end
 
       def properties(properties, required, prefix = '')
@@ -250,7 +270,7 @@ module Swagger
             merge_refs!(ret, schema(param))
           else
             ret[:required].add(param['name']) if param['required']
-            ret[:all].add("#{param['name']} (in: #{param['in']}, type: #{param['type']})")
+            ret[:all].add("#{param['name']} (in #{param['in']} type #{param['type']})")
           end
         end
         ret
