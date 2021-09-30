@@ -20,7 +20,7 @@ OptionParser.new do |opts|
     options[:incompatibilities] = i
   end
 
-  opts.on('-v', '--csv',
+  opts.on('--csv',
     'Outputs to CSV.',
     'If not specificed outputs as YAML') do |csv|
     options[:csv] = csv
