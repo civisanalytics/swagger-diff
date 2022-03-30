@@ -53,7 +53,7 @@ module Swagger
           swagger
         else
           if File.exist?(swagger) || swagger[0..7] =~ %r{^https?://}
-            swagger = open(swagger).read
+            swagger = File.exist?(swagger) ? open(swagger).read : URI.open(swagger).read
           end
           begin
             JSON.parse(swagger)
