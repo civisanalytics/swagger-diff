@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.7'
 
-  spec.add_dependency 'json-schema', '~> 2.6'
+  spec.add_dependency 'json-schema', '~> 3.0'
   spec.add_dependency 'rspec-expectations', '~> 3.3'
   spec.add_development_dependency 'bundler', '~> 2.4.9'
   spec.add_development_dependency 'pry', '~> 0.14.1'
