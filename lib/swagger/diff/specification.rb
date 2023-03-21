@@ -34,12 +34,12 @@ module Swagger
 
       private
 
-      def merge_refs!(h1, h2)
-        h2.each do |k, v|
-          if h1.include?(k)
-            h1[k] += h1[k].merge(v)
+      def merge_refs!(hash1, hash2)
+        hash2.each do |k, v|
+          if hash1.include?(k)
+            hash1[k] += hash1[k].merge(v)
           else
-            h1[k] = v
+            hash1[k] = v
           end
         end
       end
@@ -53,9 +53,9 @@ module Swagger
           swagger
         else
           if File.exist?(swagger)
-            swagger = open(swagger).read
+            swagger = File.open(swagger).read
           elsif swagger[0..7] =~ %r{^https?://}
-            swagger = URI.open(swagger).read
+            swagger = URI.parse(swagger).read
           end
           begin
             JSON.parse(swagger)
@@ -152,7 +152,7 @@ module Swagger
       # rubocop:enable Metrics/CyclomaticComplexity
       # rubocop:enable Metrics/AbcSize
 
-      def nested(ref, prefix, name, list = false)
+      def nested(ref, prefix, name, list: false)
         # Check for cycles by testing whether name was already added to
         # prefix.
         key = "#{prefix}#{name}#{'[]' if list}"
@@ -183,10 +183,10 @@ module Swagger
       end
       # rubocop:enable Metrics/ParameterLists
 
-      def properties_for_ref(prefix, name, schema, required, list = false)
+      def properties_for_ref(prefix, name, schema, required, list: false)
         ret = { required: Set.new, all: Set.new }
         if schema['$ref']
-          merge_refs!(ret, nested(schema['$ref'], prefix, name, list))
+          merge_refs!(ret, nested(schema['$ref'], prefix, name, list: list))
         elsif schema['properties']
           prefix = "#{name}#{'[]' if list}/"
           merge_refs!(ret, properties(schema['properties'], schema['required'], prefix))
@@ -222,7 +222,7 @@ module Swagger
         ret = { required: Set.new, all: Set.new }
         properties.each do |name, schema|
           if schema['type'] == 'array'
-            merge_refs!(ret, properties_for_ref(prefix, name, schema['items'], required, true))
+            merge_refs!(ret, properties_for_ref(prefix, name, schema['items'], required, list: true))
           elsif schema['type'] == 'object' || schema['properties']
             if schema['allOf']
               # TODO: handle nested allOfs.
