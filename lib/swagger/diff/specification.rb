@@ -178,7 +178,7 @@ module Swagger
       def add_property(ret, prefix, name, schema, required, list)
         key = "#{prefix}#{name}"
         ret[:required].add(key) if required&.include?(name)
-+       loc = schema['in'] || 'body'
+        loc = schema['in'] || 'body'
         ret[:all].add("#{key} (in: #{loc}, type: #{schema['type']}#{'[]' if list})")
       end
       # rubocop:enable Metrics/ParameterLists
