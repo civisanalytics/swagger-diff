@@ -55,7 +55,7 @@ module Swagger
           if File.exist?(swagger)
             swagger = open(swagger).read
           elsif swagger[0..7] =~ %r{^https?://}
-            URI.open(swagger).read
+            swagger = URI.open(swagger).read
           end
           begin
             JSON.parse(swagger)
