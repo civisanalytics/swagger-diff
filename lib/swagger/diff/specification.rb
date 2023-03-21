@@ -14,22 +14,22 @@ module Swagger
 
       def request_params
         @request_params ||= begin
-                              ret = {}
-                              @endpoint_hash.each do |key, endpoint|
-                                ret[key] = request_params_inner(params_or_nil(endpoint))
-                              end
-                              ret
-                            end
+          ret = {}
+          @endpoint_hash.each do |key, endpoint|
+            ret[key] = request_params_inner(params_or_nil(endpoint))
+          end
+          ret
+        end
       end
 
       def response_attributes
         @response_attributes ||= begin
-                                   ret = {}
-                                   @endpoint_hash.each do |key, endpoint|
-                                     ret[key] = response_attributes_inner(endpoint)
-                                   end
-                                   ret
-                                 end
+          ret = {}
+          @endpoint_hash.each do |key, endpoint|
+            ret[key] = response_attributes_inner(endpoint)
+          end
+          ret
+        end
       end
 
       private
@@ -52,8 +52,10 @@ module Swagger
         if swagger.is_a? Hash
           swagger
         else
-          if File.exist?(swagger) || swagger[0..7] =~ %r{^https?://}
+          if File.exist?(swagger)
             swagger = open(swagger).read
+          elsif swagger[0..7] =~ %r{^https?://}
+            URI.open(swagger).read
           end
           begin
             JSON.parse(swagger)
@@ -104,7 +106,7 @@ module Swagger
                  {}
                end
         idx = ref.rindex('/')
-        key = ref[idx + 1..-1]
+        key = ref[idx + 1..]
         schema(defs.fetch(key, {}), prefix)
       end
 
@@ -175,12 +177,8 @@ module Swagger
       # rubocop:disable Metrics/ParameterLists
       def add_property(ret, prefix, name, schema, required, list)
         key = "#{prefix}#{name}"
-        ret[:required].add(key) if required && required.include?(name)
-        loc = if schema['in']
-                schema['in']
-              else
-                'body'
-              end
+        ret[:required].add(key) if required&.include?(name)
++       loc = schema['in'] || 'body'
         ret[:all].add("#{key} (in: #{loc}, type: #{schema['type']}#{'[]' if list})")
       end
       # rubocop:enable Metrics/ParameterLists
@@ -243,6 +241,7 @@ module Swagger
       def request_params_inner(params)
         ret = { required: Set.new, all: Set.new }
         return ret if params.nil?
+
         params.each do |param|
           if param['in'] == 'body'
             merge_refs!(ret, schema(param['schema']))
@@ -287,6 +286,7 @@ module Swagger
         JSON::Validator.add_schema(json_schema)
         errors = JSON::Validator.fully_validate(schema_for('oai'), JSON.dump(@parsed))
         return if errors.empty?
+
         spec = if @spec.to_s.length > 80
                  "#{@spec.to_s[0..74]} ..."
                else
