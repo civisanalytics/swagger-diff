@@ -45,7 +45,7 @@ module Swagger
       end
 
       def params_or_nil(endpoint)
-        endpoint && endpoint['parameters'] || nil
+        (endpoint && endpoint['parameters']) || nil
       end
 
       def parse_swagger(swagger)
@@ -53,7 +53,7 @@ module Swagger
           swagger
         else
           if File.exist?(swagger)
-            swagger = File.open(swagger).read
+            swagger = File.read(swagger)
           elsif swagger[0..7] =~ %r{^https?://}
             swagger = URI.parse(swagger).read
           end

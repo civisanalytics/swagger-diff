@@ -53,7 +53,7 @@ expected Swagger to be compatible with 'spec/fixtures/dummy.v1.json', found:
 
     it 'should raise Exception without contents when incompatible' do
       msg = 'expected Swagger to be compatible, found:'
-      expected = File.open('spec/fixtures/dummy.v1.json').read
+      expected = File.read('spec/fixtures/dummy.v1.json')
       expect do
         expect('spec/fixtures/dummy.v2.json').to be_compatible_with(expected)
       end.to raise_error(RSpec::Expectations::ExpectationNotMetError, /#{msg}/)
