@@ -133,6 +133,7 @@ module Swagger
       def new_child?(req, old)
         idx = req.rindex('/')
         return false unless idx
+
         key = req[0..idx]
         old.none? { |param| param.start_with?(key) }
       end
@@ -142,8 +143,10 @@ module Swagger
           from.request_params.each do |key, old_params|
             new_params = to.request_params[key]
             next if new_params.nil?
+
             (new_params[:required] - old_params[:required]).each do |req|
               next if new_child?(req, old_params[:all])
+
               yielder << [key, format(req_msg, req: req)]
             end
             (old_params[:all] - new_params[:all]).each do |req|
@@ -181,7 +184,8 @@ module Swagger
           from.response_attributes.each do |key, old_attributes|
             new_attributes = to.response_attributes[key]
             next if new_attributes.nil?
-            old_attributes.keys.each do |code|
+
+            old_attributes.each_key do |code|
               if new_attributes.key?(code)
                 (old_attributes[code] - new_attributes[code]).each do |resp|
                   yielder << [key, format(attr_msg, code: code, resp: resp)]

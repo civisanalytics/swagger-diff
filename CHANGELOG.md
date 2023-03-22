@@ -5,17 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-### Added
-
-* Added 2.5.0 to the Travis matrix
+## [2.0.0]
 
 ### Changed
 
-* Bumped the Ruby version for development to 2.5.0
-* Bumped the Travis matrix to 2.2.9, 2.3.6, and 2.4.3
-* Bumped the Pry version for development to 0.11
-* Bumped the Rake version for development to 12
-* Bumped the VCR version for development to 4
+* Bumped the Ruby version for development to 2.7.7
+* Bumped the RuboCop version for development to 1.48.0
+* Bumped the Travis matrix to 2.7.7, 3.0.5, 3.1.3, 3.2.1
+* Bumped the Pry version for development to 0.14.1
+* Bumped the VCR version for development to 6.1
 * RuboCop fixes
 
 ## [1.1.2] - 2017-09-13

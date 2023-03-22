@@ -28,19 +28,19 @@ describe Swagger::Diff::Specification do
     end
 
     it 'from JSON string' do
-      contents = File.open('spec/fixtures/petstore.json', 'r').read
+      contents = File.read('spec/fixtures/petstore.json')
       spec = Swagger::Diff::Specification.new(contents)
       expect(spec.instance_variable_get(:@parsed)['swagger']).to eq('2.0')
     end
 
     it 'from YAML string' do
-      contents = File.open('spec/fixtures/petstore.yaml', 'r').read
+      contents = File.read('spec/fixtures/petstore.yaml')
       spec = Swagger::Diff::Specification.new(contents)
       expect(spec.instance_variable_get(:@parsed)['swagger']).to eq('2.0')
     end
 
     it 'from Hash' do
-      contents = File.open('spec/fixtures/petstore.json', 'r').read
+      contents = File.read('spec/fixtures/petstore.json')
       hash = JSON.parse(contents)
       spec = Swagger::Diff::Specification.new(hash)
       expect(spec.instance_variable_get(:@parsed)['swagger']).to eq('2.0')
@@ -224,7 +224,7 @@ describe Swagger::Diff::Specification do
 {"swagger"=>"2.0", "info"=>{"title"=>"Swagger Fixture", "version"=>"1.0"},  ... is not a valid Swagger specification:
 
 The property '#/paths//a//get' did not contain a required property of 'responses' in schema http://swagger.io/v2/schema.json#
-                     WARNING
+        WARNING
                     ).to_stderr
       end
     end

@@ -1,7 +1,8 @@
 AllCops:
-  TargetRubyVersion: 2.1
+  TargetRubyVersion: 2.7
+  NewCops: enable
 
-Layout/IndentHeredoc:
+Layout/HeredocIndentation:
   Enabled: false
 
 Metrics/AbcSize:
@@ -15,7 +16,7 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Max: 250
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 120
 
 Metrics/MethodLength:
@@ -31,7 +32,7 @@ Security/YAMLLoad:
 Style/Documentation:
   Enabled: false
 
-Style/FileName:
+Naming/FileName:
   Enabled: false
 
 Style/FrozenStringLiteralComment:

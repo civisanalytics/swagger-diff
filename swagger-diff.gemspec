@@ -25,15 +25,16 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.required_ruby_version = '~> 2.0'
+  spec.required_ruby_version = '>= 2.7'
 
-  spec.add_dependency 'json-schema', '~> 2.6'
+  spec.add_dependency 'json-schema', '~> 3.0'
   spec.add_dependency 'rspec-expectations', '~> 3.3'
-  spec.add_development_dependency 'bundler', '~> 1.9'
-  spec.add_development_dependency 'pry', '~> 0.11.3'
+  spec.add_development_dependency 'bundler', '~> 2.4.9'
+  spec.add_development_dependency 'pry', '~> 0.14.1'
   spec.add_development_dependency 'rake', '~> 12.3'
   spec.add_development_dependency 'rspec', '~> 3.3'
-  spec.add_development_dependency 'rubocop', '~> 0.49.0'
-  spec.add_development_dependency 'vcr', '~> 4.0'
+  spec.add_development_dependency 'rubocop', '~> 1.48.1'
+  spec.add_development_dependency 'vcr', '~> 6.1'
   spec.add_development_dependency 'webmock', '~> 3.0'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

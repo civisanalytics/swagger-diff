@@ -14,46 +14,48 @@ module Swagger
 
       def request_params
         @request_params ||= begin
-                              ret = {}
-                              @endpoint_hash.each do |key, endpoint|
-                                ret[key] = request_params_inner(params_or_nil(endpoint))
-                              end
-                              ret
-                            end
+          ret = {}
+          @endpoint_hash.each do |key, endpoint|
+            ret[key] = request_params_inner(params_or_nil(endpoint))
+          end
+          ret
+        end
       end
 
       def response_attributes
         @response_attributes ||= begin
-                                   ret = {}
-                                   @endpoint_hash.each do |key, endpoint|
-                                     ret[key] = response_attributes_inner(endpoint)
-                                   end
-                                   ret
-                                 end
+          ret = {}
+          @endpoint_hash.each do |key, endpoint|
+            ret[key] = response_attributes_inner(endpoint)
+          end
+          ret
+        end
       end
 
       private
 
-      def merge_refs!(h1, h2)
-        h2.each do |k, v|
-          if h1.include?(k)
-            h1[k] += h1[k].merge(v)
+      def merge_refs!(hash1, hash2)
+        hash2.each do |k, v|
+          if hash1.include?(k)
+            hash1[k] += hash1[k].merge(v)
           else
-            h1[k] = v
+            hash1[k] = v
           end
         end
       end
 
       def params_or_nil(endpoint)
-        endpoint && endpoint['parameters'] || nil
+        (endpoint && endpoint['parameters']) || nil
       end
 
       def parse_swagger(swagger)
         if swagger.is_a? Hash
           swagger
         else
-          if File.exist?(swagger) || swagger[0..7] =~ %r{^https?://}
-            swagger = open(swagger).read
+          if File.exist?(swagger)
+            swagger = File.read(swagger)
+          elsif swagger[0..7] =~ %r{^https?://}
+            swagger = URI.parse(swagger).read
           end
           begin
             JSON.parse(swagger)
@@ -104,7 +106,7 @@ module Swagger
                  {}
                end
         idx = ref.rindex('/')
-        key = ref[idx + 1..-1]
+        key = ref[idx + 1..]
         schema(defs.fetch(key, {}), prefix)
       end
 
@@ -150,7 +152,7 @@ module Swagger
       # rubocop:enable Metrics/CyclomaticComplexity
       # rubocop:enable Metrics/AbcSize
 
-      def nested(ref, prefix, name, list = false)
+      def nested(ref, prefix, name, list: false)
         # Check for cycles by testing whether name was already added to
         # prefix.
         key = "#{prefix}#{name}#{'[]' if list}"
@@ -175,20 +177,16 @@ module Swagger
       # rubocop:disable Metrics/ParameterLists
       def add_property(ret, prefix, name, schema, required, list)
         key = "#{prefix}#{name}"
-        ret[:required].add(key) if required && required.include?(name)
-        loc = if schema['in']
-                schema['in']
-              else
-                'body'
-              end
+        ret[:required].add(key) if required&.include?(name)
+        loc = schema['in'] || 'body'
         ret[:all].add("#{key} (in: #{loc}, type: #{schema['type']}#{'[]' if list})")
       end
       # rubocop:enable Metrics/ParameterLists
 
-      def properties_for_ref(prefix, name, schema, required, list = false)
+      def properties_for_ref(prefix, name, schema, required, list: false)
         ret = { required: Set.new, all: Set.new }
         if schema['$ref']
-          merge_refs!(ret, nested(schema['$ref'], prefix, name, list))
+          merge_refs!(ret, nested(schema['$ref'], prefix, name, list: list))
         elsif schema['properties']
           prefix = "#{name}#{'[]' if list}/"
           merge_refs!(ret, properties(schema['properties'], schema['required'], prefix))
@@ -224,7 +222,7 @@ module Swagger
         ret = { required: Set.new, all: Set.new }
         properties.each do |name, schema|
           if schema['type'] == 'array'
-            merge_refs!(ret, properties_for_ref(prefix, name, schema['items'], required, true))
+            merge_refs!(ret, properties_for_ref(prefix, name, schema['items'], required, list: true))
           elsif schema['type'] == 'object' || schema['properties']
             if schema['allOf']
               # TODO: handle nested allOfs.
@@ -243,6 +241,7 @@ module Swagger
       def request_params_inner(params)
         ret = { required: Set.new, all: Set.new }
         return ret if params.nil?
+
         params.each do |param|
           if param['in'] == 'body'
             merge_refs!(ret, schema(param['schema']))
@@ -287,6 +286,7 @@ module Swagger
         JSON::Validator.add_schema(json_schema)
         errors = JSON::Validator.fully_validate(schema_for('oai'), JSON.dump(@parsed))
         return if errors.empty?
+
         spec = if @spec.to_s.length > 80
                  "#{@spec.to_s[0..74]} ..."
                else
