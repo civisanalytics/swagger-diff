@@ -115,7 +115,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Initial Release
 
-[Unreleased]: https://github.com/civisanalytics/swagger-diff/compare/v1.1.2...HEAD
+[2.0.0]: https://github.com/civisanalytics/swagger-diff/compare/v1.1.2...v2.0.0
 [1.1.2]: https://github.com/civisanalytics/swagger-diff/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/civisanalytics/swagger-diff/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/civisanalytics/swagger-diff/compare/v1.0.5...v1.1.0
